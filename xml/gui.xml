@@ -1,0 +1,14 @@
+<root>
+    <window name="welcome">
+        <panel>
+            <label>Fist level</label>
+            <panel columns="1" vSpacing="3">
+                <label>Hello there!</label>
+                <label>Some more text!</label>
+            </panel>
+            <panel columns="1">
+                <label>I'm down hereee!</label>
+            </panel>
+        </panel>
+    </window>
+</root>

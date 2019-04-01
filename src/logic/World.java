@@ -5,6 +5,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import gen.PlayerData;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -44,6 +45,7 @@ public class World {
 
     public World() {
 
+
         _leagues = new HashMap<>();
         _players = new HashMap<>();
         _teams = new HashMap<>();
@@ -70,13 +72,13 @@ public class World {
             strategy.setColumnMapping(memberFieldsToBindTo);
 
             @SuppressWarnings("unchecked") //ffs
-                    CsvToBean<Team> csvToBean = new CsvToBeanBuilder(reader)
-                    .withMappingStrategy(strategy)
-                    .withSkipLines(1)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withStrictQuotes(true)
-                    .withQuoteChar('"')
-                    .build();
+            CsvToBean<Team> csvToBean = new CsvToBeanBuilder(reader)
+            .withMappingStrategy(strategy)
+            .withSkipLines(1)
+            .withIgnoreLeadingWhiteSpace(true)
+            .withStrictQuotes(true)
+            .withQuoteChar('"')
+            .build();
 
             Iterator<Team> teamIterator = csvToBean.iterator();
 

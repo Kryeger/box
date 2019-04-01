@@ -14,7 +14,9 @@ import com.googlecode.lanterna.terminal.TerminalResizeListener;
 
 import com.opencsv.CSVReader;
 
+import gui.GuiMaker;
 import logic.*;
+import gen.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,13 +26,14 @@ import java.util.TimeZone;
 
 public class Main {
 
-    private String _gameName = "CSGO Universe";
+    private String _gameName = "CSim";
 
     public static void main(String[] args) {
 
         //RANDOM! not preexisting
 
         World world = new World();
+        GuiMaker guiMaker;
 
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         Screen screen = null;
@@ -40,40 +43,9 @@ public class Main {
             screen = terminalFactory.createScreen();
             screen.startScreen();
 
-            final WindowBasedTextGUI textGUI = new MultiWindowTextGUI(screen);
+            guiMaker = new GuiMaker(screen);
 
-            final Window window = new BasicWindow("Welcome");
-            System.out.println(textGUI.getScreen().getTerminalSize());
-
-            //CONTENT PANEL
-            Panel contentPanel = new Panel(new GridLayout(1));
-            GridLayout contentPanelLayoutManager = (GridLayout)contentPanel.getLayoutManager();
-            contentPanelLayoutManager.setVerticalSpacing(1);
-
-            //NEW_GAME PANEL
-            Panel welcomePanel = new Panel(new GridLayout(1));
-            GridLayout newGamePanelLayoutManager = (GridLayout)welcomePanel.getLayoutManager();
-
-            Button newGameButton = new Button("New Game", new Runnable() {
-                @Override
-                public void run() {
-                    MessageDialog.showMessageDialog(textGUI, "New Game", "Starting a new game...", MessageDialogButton.OK);
-                }
-            });
-            welcomePanel.addComponent(newGameButton);
-
-            Button loadGameButton = new Button("Load Game", new Runnable() {
-                @Override
-                public void run() {
-                    MessageDialog.showMessageDialog(textGUI, "New Game", "Starting a new game...", MessageDialogButton.OK);
-                }
-            });
-            welcomePanel.addComponent(loadGameButton);
-
-            contentPanel.addComponent(welcomePanel);
-
-            window.setComponent(contentPanel);
-            textGUI.addWindowAndWait(window);
+            WindowBasedTextGUI textGUI = guiMaker.generateGui("./xml/gui.xml");
 
         } catch (IOException e) {
             e.printStackTrace();

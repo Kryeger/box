@@ -31,7 +31,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return "PlayerData{" +
+        return "Player{" +
                 "_id='" + _id + '\'' +
                 ", _firstName='" + _firstName + '\'' +
                 ", _lastName='" + _lastName + '\'' +

@@ -1,6 +1,6 @@
 id            ,firstName    ,lastName  ,nickName   ,skillRating,teamId
-"PL-f0rest"   ,"Patrik"     ,"Lindberg","f0rest"   ,"90"         ,"NiP"
-"CA-GeT_RiGhT","Christopher","Alesund" ,"GeT_RiGhT","95"         ,"NiP"
-"WS-draken"   ,"William"    ,"Sundin"  ,"draken"   ,"85"         ,"NiP"
-"JO-Lekr0"    ,"Jonas"      ,"Olofsson","Lekr0"    ,"88"         ,"NiP"
-"FS-REZ"      ,"Fredrik"    ,"Sterner" ,"REZ"      ,"92"         ,"NiP"
+"PL-f0rest"   ,"Patrik"     ,"Lindberg","f0rest"   ,"90"       ,"NiP"
+"CA-GeT_RiGhT","Christopher","Alesund" ,"GeT_RiGhT","95"       ,"NiP"
+"WS-draken"   ,"William"    ,"Sundin"  ,"draken"   ,"85"       ,"NiP"
+"JO-Lekr0"    ,"Jonas"      ,"Olofsson","Lekr0"    ,"88"       ,"NiP"
+"FS-REZ"      ,"Fredrik"    ,"Sterner" ,"REZ"      ,"92"       ,"NiP"
