@@ -57,8 +57,6 @@ public class World {
         initPlayers(pathToPlayers);
 //        initManagers(pathToManagers);
 //        initMatches(pathToMatches);
-
-        System.out.println(_teams.toString());
     }
 
     private void initTeams(String pathToTeams) {
@@ -118,7 +116,6 @@ public class World {
                 Player newPlayer = playerIterator.next();
                 _players.put(newPlayer.getId(), newPlayer);
 
-                System.out.println(newPlayer.toString());
                 if(_teams.containsKey(newPlayer.getTeamId())){
                     _teams.get(newPlayer.getTeamId()).insertPlayer(newPlayer.getId());
                 }
@@ -139,15 +136,7 @@ public class World {
     private void initMatches(String pathToMatches) {
     }
 
-    public String getPlayersAllDetails() {
-        StringBuilder ret = new StringBuilder();
-
-        for(Map.Entry<String, Player> entry: _players.entrySet()){
-            ret.append(entry.getValue().getAllDetails());
-            ret.append("\n");
-        }
-
-        return ret.toString();
+    public HashMap<String, Player> getPlayers() {
+        return _players;
     }
-
 }

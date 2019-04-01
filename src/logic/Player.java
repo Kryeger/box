@@ -41,10 +41,6 @@ public class Player {
                 "}\n";
     }
 
-    public String getAllDetails() {
-        return (getFirstName() + " " + getNickName() + " " + getLastName());
-    }
-
     public String getId() {
         return _id;
     }

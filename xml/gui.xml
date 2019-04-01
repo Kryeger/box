@@ -1,13 +1,14 @@
 <root>
-    <window name="welcome">
-        <panel>
-            <label>Fist level</label>
-            <panel columns="1" vSpacing="3">
-                <label>Hello there!</label>
-                <label>Some more text!</label>
+    <window id="main-window" title="welcome" wait="true">
+        <panel id="player-info" columns="3">
+            <panel id="player-firstName">
+
             </panel>
-            <panel columns="1">
-                <label>I'm down hereee!</label>
+            <panel id="player-nickName">
+
+            </panel>
+            <panel id="player-lastName">
+
             </panel>
         </panel>
     </window>

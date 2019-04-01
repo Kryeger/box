@@ -19,10 +19,7 @@ import logic.*;
 import gen.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
 
 public class Main {
 
@@ -46,6 +43,14 @@ public class Main {
             guiMaker = new GuiMaker(screen);
 
             WindowBasedTextGUI textGUI = guiMaker.generateGui("./xml/gui.xml");
+
+            world.getPlayers().forEach((id, player) -> {
+                guiMaker.getPanels().get("player-firstName").addComponent(new Label(player.getFirstName()));
+                guiMaker.getPanels().get("player-nickName").addComponent(new Label(player.getNickName()));
+                guiMaker.getPanels().get("player-lastName").addComponent(new Label(player.getLastName()));
+
+                System.out.println(player.toString());
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
