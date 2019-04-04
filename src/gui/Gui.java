@@ -1,45 +1,69 @@
 package gui;
-
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.PropertyTheme;
 import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.Button;
+import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.Window.Hint;
 import com.googlecode.lanterna.screen.Screen;
-
 import java.awt.*;
-import java.io.*;
-import java.security.spec.ECField;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
-
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.List;
-import java.util.Collection;
 
-public class GuiMaker {
+public class Gui {
 
-    private WindowBasedTextGUI _window;
+    private MultiWindowTextGUI _window;
+    private SeparateTextGUIThread _thread;
 
     private HashMap<String, Window> _windows = new HashMap<>();
     private HashMap<String, Panel> _panels = new HashMap<>();
     private HashMap<String, Label> _labels = new HashMap<>();
+    private HashMap<String, Button> _buttons = new HashMap<>();
 
-    public GuiMaker(Screen screen) {
-        _window = new MultiWindowTextGUI(screen);
+    public Gui(Screen screen, String pathToXml) {
+        _window = new MultiWindowTextGUI(new SeparateTextGUIThread.Factory(), screen);
+        _thread = (SeparateTextGUIThread) _window.getGUIThread();
+
+        init(pathToXml);
     }
 
-    public WindowBasedTextGUI generateGui(String pathToXml) {
+    private void init(String pathToXml) {
 
         try {
+
+            FileInputStream file = null;
+            Properties theme = null;
+
+            try {
+                file = new FileInputStream("./config/themes/default.properties");
+                // create Properties class object
+                theme =new Properties();
+                // load properties file into it
+                theme.load(file);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                file.close();
+            }
+
+            _window.setTheme(new PropertyTheme(theme));
 
             File inputFile = new File(pathToXml);
 
@@ -54,16 +78,13 @@ public class GuiMaker {
 
             parseRoot(root);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return _window;
-
     }
 
-    public void parseRoot(Element root) {
+    private void parseRoot(Element root) {
         try {
 
             for (Element childElement : root.getChildren()) {
@@ -75,17 +96,19 @@ public class GuiMaker {
         }
     }
 
-    public void parseWindow(Element element) {
+    private void parseWindow(Element element) {
         Window window = createWindow(element);
 
         for (Element childElement : element.getChildren()) {
             parseTopPanel(window, childElement);
         }
 
-        if (element.getAttributeValue("wait") != null) {
-            _window.addWindowAndWait(window);
-        } else {
-            _window.addWindow(window);
+        if (window != null) {
+            if (element.getAttribute("wait") != null) {
+                _window.addWindowAndWait(window);
+            } else {
+                _window.addWindow(window);
+            }
         }
     }
 
@@ -101,8 +124,6 @@ public class GuiMaker {
                 parseElement(panel, childElement);
             }
         }
-
-        System.out.println(panel.getChildren().toString());
 
         window.setComponent(panel);
     }
@@ -121,7 +142,9 @@ public class GuiMaker {
 
         }
 
-        parentPanel.addComponent(panel);
+        if (panel != null) {
+            parentPanel.addComponent(panel);
+        }
 
     }
 
@@ -133,8 +156,21 @@ public class GuiMaker {
 
                 case "label":
 
-                    System.out.println(element.getText());
-                    parentPanel.addComponent(createLabel(element));
+                    Label label = createLabel(element);
+
+                    if(label != null){
+                        parentPanel.addComponent(label);
+                    }
+
+                    break;
+
+                case "button":
+
+                    Button button = createButton(element);
+
+                    if(button != null){
+                        parentPanel.addComponent(button);
+                    }
 
                     break;
 
@@ -156,7 +192,8 @@ public class GuiMaker {
                 throw new Exception("Element is not a window");
             }
 
-            Window window = new BasicWindow(element.getAttributeValue("title"));
+            CustomWindow window = new CustomWindow(element.getAttributeValue("title")) {
+            };
 
             ArrayList<Hint> hints = new ArrayList<>();
 
@@ -168,6 +205,10 @@ public class GuiMaker {
                 switch (attribute.getName()) {
                     case "id":
                         id = attribute.getValue();
+                        break;
+
+                    case "hidden":
+                        window.setVisible(false);
                         break;
 
                     case "width":
@@ -443,6 +484,52 @@ public class GuiMaker {
 
     }
 
+    private Button createButton(Element element){
+
+        try {
+
+            if (!element.getName().equals("button")) {
+                throw new Exception("Element is not a panel");
+            }
+
+            Button button = new Button(element.getText());
+
+            String id = null;
+
+            for (Attribute attribute : element.getAttributes()) {
+
+                switch (attribute.getName()) {
+
+                    case "id":
+                        id = attribute.getValue();
+                        break;
+
+                    case "action":
+                        break;
+
+                    case "focused":
+                        break;
+
+                    default:
+                        throw new Exception("Unknown attribute '" + attribute.getName() + "' in element 'button'");
+                }
+
+            }
+
+            if (id == null) {
+                id = UUID.randomUUID().toString();
+            }
+
+            _buttons.put(id, button);
+
+            return button;
+
+        } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+    }
+    }
+
     public HashMap<String, Window> getWindows() {
         return _windows;
     }
@@ -465,5 +552,17 @@ public class GuiMaker {
 
     public void setLabels(HashMap<String, Label> labels) {
         _labels = labels;
+    }
+
+    public HashMap<String, Button> getButtons() {
+        return _buttons;
+    }
+
+    public void setButtons(HashMap<String, Button> buttons) {
+        _buttons = buttons;
+    }
+
+    public SeparateTextGUIThread getThread() {
+        return _thread;
     }
 }

@@ -1,15 +1,23 @@
 <root>
-    <window id="main-window" title="welcome" wait="true">
-        <panel id="player-info" columns="3">
-            <panel id="player-firstName">
+    <window id="main" title="welcome">
+        <panel id="mainPanel" columns="1">
+
+            <button id="btn">Focused?</button>
+
+            <panel id="player-info" columns="3">
+
+                <panel id="player-firstName" columns="1">
+
+                </panel>
+                <panel id="player-nickName" columns="1">
+
+                </panel>
+                <panel id="player-lastName" columns="1">
+
+                </panel>
 
             </panel>
-            <panel id="player-nickName">
 
-            </panel>
-            <panel id="player-lastName">
-
-            </panel>
         </panel>
     </window>
 </root>
