@@ -9,15 +9,21 @@ import com.googlecode.lanterna.gui2.Button;
 import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.SeparateTextGUIThread;
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.Window.Hint;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import java.io.File;
@@ -36,6 +42,24 @@ public class Gui {
     public Gui(Screen screen, String pathToXml) {
         _window = new MultiWindowTextGUI(new SeparateTextGUIThread.Factory(), screen);
         _thread = (SeparateTextGUIThread) _window.getGUIThread();
+
+        _window.addListener(new TextGUI.Listener() {
+            @Override
+            public boolean onUnhandledKeyStroke(TextGUI textGUI, KeyStroke keyStroke) {
+                if((keyStroke.isCtrlDown() && keyStroke.getKeyType() == KeyType.Tab) ||
+                        keyStroke.getKeyType() == KeyType.F6) {
+                    ((WindowBasedTextGUI)textGUI).cycleActiveWindow(false);
+                }
+                else if((keyStroke.isCtrlDown() && keyStroke.getKeyType() == KeyType.ReverseTab) ||
+                        keyStroke.getKeyType() == KeyType.F7) {
+                    ((WindowBasedTextGUI)textGUI).cycleActiveWindow(true);
+                }
+                else {
+                    return false;
+                }
+                return true;
+            }
+        });
 
         init(pathToXml);
     }
@@ -99,6 +123,16 @@ public class Gui {
     private void parseWindow(Element element) {
         Window window = createWindow(element);
 
+        int x = 0, y = 0;
+
+        if(element.getAttribute("left")  != null){
+            x = Integer.valueOf(element.getAttributeValue("left"));
+        }
+
+        if(element.getAttribute("top")  != null){
+            y = Integer.valueOf(element.getAttributeValue("top"));
+        }
+
         for (Element childElement : element.getChildren()) {
             parseTopPanel(window, childElement);
         }
@@ -110,6 +144,8 @@ public class Gui {
                 _window.addWindow(window);
             }
         }
+
+        window.setPosition(new TerminalPosition(x, y));
     }
 
     private void parseTopPanel(Window window, Element element) {
@@ -261,7 +297,6 @@ public class Gui {
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }
-
             _windows.put(id, window);
 
             return window;
@@ -414,6 +449,13 @@ public class Gui {
 
             GridLayout panelLayoutManager = (GridLayout) panel.getLayoutManager();
 
+            GridLayout.Alignment vAlign = GridLayout.Alignment.BEGINNING;
+            GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
+            boolean vSpread = false;
+            boolean hSpread = false;
+            int height = 1;
+            int width = 1;
+
             String id = null;
 
             for (Attribute attribute : element.getAttributes()) {
@@ -463,6 +505,54 @@ public class Gui {
                         break;
 
                     //align
+                    case "vAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                vAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                vAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                vAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    case "hAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                hAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                hAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                hAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    //spread
+                    case "vSpread":
+                        vSpread = true;
+                        break;
+
+                    case "hSpread":
+                        hSpread = true;
+                        break;
+
+                    case "height":
+                        height = attribute.getIntValue();
+                        break;
+
+                    case "width":
+                        width = attribute.getIntValue();
+                        break;
 
                     default:
                         throw new Exception("Unknown attribute '" + attribute.getName() + "' in element 'panel'");
@@ -472,6 +562,15 @@ public class Gui {
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }
+
+            panel.setLayoutData(GridLayout.createLayoutData(
+                    hAlign,
+                    vAlign,
+                    hSpread,
+                    vSpread,
+                    height,
+                    width
+            ));
 
             _panels.put(id, panel);
 
@@ -494,6 +593,13 @@ public class Gui {
 
             Button button = new Button(element.getText());
 
+            GridLayout.Alignment vAlign = GridLayout.Alignment.BEGINNING;
+            GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
+            boolean vSpread = false;
+            boolean hSpread = false;
+            int height = 1;
+            int width = 1;
+
             String id = null;
 
             for (Attribute attribute : element.getAttributes()) {
@@ -507,7 +613,54 @@ public class Gui {
                     case "action":
                         break;
 
-                    case "focused":
+                    //align
+                    case "vAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                vAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                vAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                vAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    case "hAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                hAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                hAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                hAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    //spread
+                    case "vSpread":
+                        vSpread = true;
+                        break;
+
+                    case "hSpread":
+                        hSpread = true;
+                        break;
+
+                    case "height":
+                        height = attribute.getIntValue();
+                        break;
+
+                    case "width":
+                        width = attribute.getIntValue();
                         break;
 
                     default:
@@ -515,6 +668,15 @@ public class Gui {
                 }
 
             }
+
+            button.setLayoutData(GridLayout.createLayoutData(
+                    hAlign,
+                    vAlign,
+                    hSpread,
+                    vSpread,
+                    height,
+                    width
+            ));
 
             if (id == null) {
                 id = UUID.randomUUID().toString();
@@ -564,5 +726,9 @@ public class Gui {
 
     public SeparateTextGUIThread getThread() {
         return _thread;
+    }
+
+    public MultiWindowTextGUI getWindow() {
+        return _window;
     }
 }

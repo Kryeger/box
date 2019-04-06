@@ -1,11 +1,10 @@
 package logic;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import gen.PlayerData;
+import gen.MalePlayerGenerator;
+import gen.TeamGenerator;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -21,11 +20,11 @@ public class World {
     String pathToManagers;
     String pathToMatches;
 
-    private HashMap<String, League> _leagues;
-    private HashMap<String, Team> _teams;
-    private HashMap<String, Player> _players;
-    private HashMap<String, Manager> _managers;
-    private HashMap<String, Match> _matches;
+    private HashMap<String, League> _leagues = new HashMap<>();
+    private HashMap<String, Team> _teams = new HashMap<>();
+    private HashMap<String, Player> _players = new HashMap<>();
+    private HashMap<String, Manager> _managers = new HashMap<>();
+    private HashMap<String, Match> _matches = new HashMap<>();
 
     @Override
     public String toString() {
@@ -45,18 +44,23 @@ public class World {
 
     public World() {
 
-
-        _leagues = new HashMap<>();
-        _players = new HashMap<>();
-        _teams = new HashMap<>();
-        _managers = new HashMap<>();
-        _matches = new HashMap<>();
-
 //        initLeagues(pathToLeagues);
-        initTeams(pathToTeams);
-        initPlayers(pathToPlayers);
+//        initTeams(pathToTeams);
+//        initPlayers(pathToPlayers);
 //        initManagers(pathToManagers);
 //        initMatches(pathToMatches);
+
+        MalePlayerGenerator mpg = new MalePlayerGenerator();
+        for(int i = 0; i < 20; i++){
+            Player newPlayer = mpg.generate();
+            _players.put(newPlayer.getId(), newPlayer);
+        }
+
+        TeamGenerator tg = new TeamGenerator();
+        for(int i = 0; i < 20; i++){
+            Team newTeam = tg.generate();
+            _teams.put(newTeam.getId(), newTeam);
+        }
     }
 
     private void initTeams(String pathToTeams) {
@@ -138,5 +142,9 @@ public class World {
 
     public HashMap<String, Player> getPlayers() {
         return _players;
+    }
+
+    public HashMap<String, Team> getTeams() {
+        return _teams;
     }
 }

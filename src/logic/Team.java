@@ -6,15 +6,17 @@ public class Team {
 
     private String _id;
     private String _name;
+    private String _acronym;
     private Manager _manager;
     private ArrayList<String> _players = new ArrayList<>();
 
     public Team() {
     }
 
-    public Team(String id, String name) {
+    public Team(String id, String name, String acronym) {
         _id = id;
         _name = name;
+        _acronym = acronym;
     }
 
     @Override
@@ -22,6 +24,7 @@ public class Team {
         return "Team{" +
                 "_id='" + _id + '\'' +
                 ", _name='" + _name + '\'' +
+                ", _acronym='" + _acronym + '\'' +
                 ", _manager=" + _manager +
                 ", _players=" + _players +
                 "}\n";
@@ -55,5 +58,13 @@ public class Team {
         if(_players.size() < 5){
             _players.add(playerId);
         }
+    }
+
+    public String getAcronym() {
+        return _acronym;
+    }
+
+    public void setAcronym(String acronym) {
+        _acronym = acronym;
     }
 }

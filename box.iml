@@ -8,5 +8,17 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/modules/lanterna" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/modules/lanterna/native-integration/src/main/java" />
+          <root url="file://$MODULE_DIR$/modules/lanterna/src/main/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -7,12 +7,12 @@ public class Player {
     private String _lastName;
     private String _nickName;
     private String _teamId;
-    private int _skillRating; //temporary; will be a Skills class with Accuracy, Movement etc
+    private double _skillRating; //temporary; will be a Skills class with Accuracy, Movement etc
 
     public Player() {
     }
 
-    public Player(String id, String firstName, String lastName, String nickName, String teamId, int skillRating) {
+    public Player(String id, String firstName, String lastName, String nickName, String teamId, double skillRating) {
         _id = id;
         _firstName = firstName;
         _lastName = lastName;
@@ -73,11 +73,11 @@ public class Player {
         _nickName = nickName;
     }
 
-    public int getSkillRating() {
+    public double getSkillRating() {
         return _skillRating;
     }
 
-    public void setSkillRating(int skillRating) {
+    public void setSkillRating(double skillRating) {
         _skillRating = skillRating;
     }
 }

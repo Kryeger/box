@@ -1,19 +1,42 @@
 <root>
-    <window id="main" title="welcome">
+    <window id="main" title="Players">
         <panel id="mainPanel" columns="1">
 
-            <button id="btn">Focused?</button>
+            <panel id="panel1" columns="2" hAlign="center">
+                <button id="btn">Left</button>
+                <button id="btn1">Right</button>
+            </panel>
 
-            <panel id="player-info" columns="3">
+            <panel id="player-info" columns="4" hSpacing="2">
 
-                <panel id="player-firstName" columns="1">
-
+                <panel id="player-firstName" columns="1" >
+                    <label bgColor="#AA8612">First Name</label>
                 </panel>
-                <panel id="player-nickName" columns="1">
-
+                <panel id="player-nickName" columns="1" >
+                    <label bgColor="#AA8612">Nickname</label>
                 </panel>
-                <panel id="player-lastName" columns="1">
+                <panel id="player-lastName" columns="1" >
+                    <label bgColor="#AA8612">Last name</label>
+                </panel>
+                <panel id="player-skillRating" columns="1" >
+                    <label bgColor="#AA8612">Skill</label>
+                </panel>
 
+            </panel>
+
+        </panel>
+    </window>
+
+    <window id="other" title="Teams" left="80" top="0">
+        <panel id="mainOtherPane;" columns="1">
+
+            <panel id="team-info" columns="2" hSpacing="3">
+
+                <panel id="team-name" columns="1">
+                    <label bgColor="#AA8612">Name</label>
+                </panel>
+                <panel id="team-acronym" columns="1">
+                    <label bgColor="#AA8612">Acronym</label>
                 </panel>
 
             </panel>

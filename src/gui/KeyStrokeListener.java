@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KeyStrokeListener implements WindowListener {
     public void onInput(Window basePane, KeyStroke keyStroke, AtomicBoolean deliverEvent) {
+
     }
 
     public void onUnhandledInput(Window basePane, KeyStroke keyStroke, AtomicBoolean hasBeenHandled) {
