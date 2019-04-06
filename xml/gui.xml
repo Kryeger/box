@@ -3,8 +3,8 @@
         <panel id="mainPanel" columns="1">
 
             <panel id="panel1" columns="2" hAlign="center">
-                <button id="btn">Left</button>
-                <button id="btn1">Right</button>
+                <button id="btn"> Left </button>
+                <button id="btn1"> Right </button>
             </panel>
 
             <panel id="player-info" columns="4" hSpacing="2">

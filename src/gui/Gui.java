@@ -43,6 +43,7 @@ public class Gui {
         _window = new MultiWindowTextGUI(new SeparateTextGUIThread.Factory(), screen);
         _thread = (SeparateTextGUIThread) _window.getGUIThread();
 
+        //window control
         _window.addListener(new TextGUI.Listener() {
             @Override
             public boolean onUnhandledKeyStroke(TextGUI textGUI, KeyStroke keyStroke) {
@@ -81,6 +82,7 @@ public class Gui {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
             finally {
