@@ -1,5 +1,8 @@
 package logic;
 
+import utils.Money;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Team {
@@ -8,15 +11,25 @@ public class Team {
     private String _name;
     private String _acronym;
     private Manager _manager;
-    private ArrayList<String> _players = new ArrayList<>();
+    private ArrayList<Player> _players = new ArrayList<>();
+    private Money _money;
 
     public Team() {
     }
 
-    public Team(String id, String name, String acronym) {
+    public Team(String id, String name, String acronym, String money) {
         _id = id;
         _name = name;
         _acronym = acronym;
+        _money = new Money(money);
+    }
+
+    public Money getMoney() {
+        return _money;
+    }
+
+    public void setMoney(Money money) {
+        _money = money;
     }
 
     @Override
@@ -54,9 +67,10 @@ public class Team {
         _manager = manager;
     }
 
-    public void insertPlayer(String playerId) {
-        if(_players.size() < 5){
-            _players.add(playerId);
+    public void insertPlayer(Player player) {
+        if (_players.size() < 5) {
+            _players.add(player);
+            player.setTeamId(getId());
         }
     }
 

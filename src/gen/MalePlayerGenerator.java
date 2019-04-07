@@ -160,18 +160,27 @@ public class MalePlayerGenerator implements Generator<Player>{
 
     public MalePlayerGenerator(){}
 
-    public Player generate() {
+    public Player generate(double median) {
 
         String firstName = generateMaleFirstName();
         String lastName = generateLastName();
         String nickName = generateNickName();
-        double skillRating = generateSkillRating();
 
-        while(skillRating < 1 || skillRating > 100){
-            skillRating = generateSkillRating();
+        while(nickName.length() > 12){
+            nickName = generateNickName();
         }
 
-        return new Player(UUID.randomUUID().toString(), firstName, lastName, nickName, "", skillRating);
+        double skillRating = generateSkillRating(median);
+
+        while(skillRating < 1 || skillRating > 100){
+            skillRating = generateSkillRating(median);
+        }
+
+        double salary = generateSalary(skillRating);
+
+        double signingBonus = generateSigningBonus(skillRating);
+
+        return new Player(UUID.randomUUID().toString(), firstName, lastName, nickName, "", skillRating, String.valueOf((int)salary), String.valueOf((int)signingBonus));
     }
 
     private String generateMaleFirstName() {
@@ -234,12 +243,139 @@ public class MalePlayerGenerator implements Generator<Player>{
 
         }
 
-        return nickName.toString();
+        //spice
+
+        StringBuilder spicedNickName = new StringBuilder();
+
+        for (int i = 0; i < nickName.length(); i++) {
+            switch (nickName.charAt(i)){
+                case 'A':
+                case 'a':
+                    if(randomGenerator.nextInt(10) > 7){
+                        if(randomGenerator.nextBoolean()){
+                            spicedNickName.append('4');
+                        } else {
+                            spicedNickName.append('@');
+                        }
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                break;
+
+                case 'E':
+                case 'e':
+                    if(randomGenerator.nextInt(10) > 7){
+                        spicedNickName.append('3');
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                break;
+
+                case 'O':
+                case 'o':
+                    if(randomGenerator.nextInt(10) > 7){
+                        spicedNickName.append('0');
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                case 'S':
+                case 's':
+                    if(randomGenerator.nextInt(10) > 7){
+                        if(randomGenerator.nextBoolean()){
+                            spicedNickName.append('z');
+                        } else {
+                            spicedNickName.append('$');
+                        }
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                case 'H':
+                    if(randomGenerator.nextInt(10) > 7){
+                        spicedNickName.append('#');
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                case 'I':
+                    if(randomGenerator.nextInt(10) > 7){
+                        if(randomGenerator.nextBoolean()){
+                            spicedNickName.append('1');
+                        } else {
+                            spicedNickName.append('Y');
+                        }
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                case 'i':
+                    if(randomGenerator.nextInt(10) > 7){
+                        if(randomGenerator.nextBoolean()){
+                            spicedNickName.append('1');
+                        } else {
+                            spicedNickName.append('y');
+                        }
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                case 't':
+                case 'T':
+                    if(randomGenerator.nextInt(10) > 7){
+                        spicedNickName.append('7');
+                    } else {
+                        spicedNickName.append(nickName.charAt(i));
+                    }
+                    break;
+
+                default:
+                    spicedNickName.append(nickName.charAt(i));
+
+            }
+        }
+
+        return spicedNickName.toString();
     }
 
-    private double generateSkillRating() {
-        CauchyDistribution cd = new CauchyDistribution(60, 7);
-        return cd.sample();
+    private double generateSkillRating(double median) {
+        CauchyDistribution cd = new CauchyDistribution(median, 7);
+        double sample = cd.sample();
+
+        while(sample < median - 10 || sample > median + 25){
+            sample = cd.sample();
+        }
+
+        return sample;
+    }
+
+    private double generateSalary(double skillRating){
+        CauchyDistribution cd = new CauchyDistribution(200, 60);
+        double base = (skillRating * skillRating) * (0.52631577947);
+        double mod = cd.sample();
+
+        while(base + mod <= 0){
+            mod = cd.sample();
+        }
+
+        return base + mod;
+    }
+
+    private double generateSigningBonus(double skillRating){
+        CauchyDistribution cd = new CauchyDistribution(skillRating * 15, 75);
+        double base = (skillRating * skillRating) * (0.52631577947);
+        double mod = cd.sample();
+
+        while(base + mod <= 0){
+            mod = cd.sample();
+        }
+
+        return base + mod;
     }
 
 }

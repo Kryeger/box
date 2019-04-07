@@ -2,30 +2,30 @@ package logic;
 
 public class Manager {
 
-    private String _name;
-    private int _money;
+    private String _firstName;
+    private String _lastName;
     private String _teamId;
 
-    public Manager(String name, int money, String teamId) {
-        _name = name;
-        _money = money;
+    public Manager(String firstName, String lastName, String teamId) {
+        _firstName = firstName;
+        _lastName = lastName;
         _teamId = teamId;
     }
 
-    public String getName() {
-        return _name;
+    public String getFirstName() {
+        return _firstName;
     }
 
-    public void setName(String name) {
-        _name = name;
+    public void setFirstName(String firstName) {
+        _firstName = firstName;
     }
 
-    public int getMoney() {
-        return _money;
+    public String getLastName() {
+        return _lastName;
     }
 
-    public void setMoney(int money) {
-        _money = money;
+    public void setLastName(String lastName) {
+        _lastName = lastName;
     }
 
     public String getTeamId() {

@@ -5,6 +5,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import gen.MalePlayerGenerator;
 import gen.TeamGenerator;
+import org.apache.commons.math3.distribution.CauchyDistribution;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -18,6 +19,7 @@ public class World {
     String pathToPlayers = "./data/players/players.csv";
     String pathToTeams = "./data/teams/teams.csv";
     String pathToManagers;
+
     String pathToMatches;
 
     private HashMap<String, League> _leagues = new HashMap<>();
@@ -44,23 +46,37 @@ public class World {
 
     public World() {
 
-//        initLeagues(pathToLeagues);
-//        initTeams(pathToTeams);
-//        initPlayers(pathToPlayers);
-//        initManagers(pathToManagers);
-//        initMatches(pathToMatches);
-
+        CauchyDistribution teamSkillDistribution = new CauchyDistribution(60, 8);
+        
         MalePlayerGenerator mpg = new MalePlayerGenerator();
-        for(int i = 0; i < 20; i++){
-            Player newPlayer = mpg.generate();
-            _players.put(newPlayer.getId(), newPlayer);
+        TeamGenerator tg = new TeamGenerator();
+
+        for (int i = 0; i < 3; i++) {
+
+            League newLeague = new League("League" + (i + 1));
+
+            for (int j = 0; j < 30; j++) {
+
+                Team newTeam = tg.generate();
+                _teams.put(newTeam.getId(), newTeam);
+
+                for (int k = 0; k < 5; k++) {
+
+                    Player newPlayer = mpg.generate((3 - i) * 25);
+                    _players.put(newPlayer.getId(), newPlayer);
+                    newTeam.insertPlayer(newPlayer);
+                }
+
+                newLeague.insertTeam(newTeam);
+            }
+
+            _leagues.put(UUID.randomUUID().toString(), newLeague);
+
         }
 
-        TeamGenerator tg = new TeamGenerator();
-        for(int i = 0; i < 20; i++){
-            Team newTeam = tg.generate();
-            _teams.put(newTeam.getId(), newTeam);
-        }
+        _leagues.forEach((id, league) -> {
+            System.out.println(league.toString());
+        });
     }
 
     private void initTeams(String pathToTeams) {
@@ -121,7 +137,7 @@ public class World {
                 _players.put(newPlayer.getId(), newPlayer);
 
                 if(_teams.containsKey(newPlayer.getTeamId())){
-                    _teams.get(newPlayer.getTeamId()).insertPlayer(newPlayer.getId());
+                    _teams.get(newPlayer.getTeamId()).insertPlayer(_players.get(newPlayer.getId()));
                 }
             }
 
@@ -146,5 +162,9 @@ public class World {
 
     public HashMap<String, Team> getTeams() {
         return _teams;
+    }
+
+    public HashMap<String, Manager> getManagers() {
+        return _managers;
     }
 }

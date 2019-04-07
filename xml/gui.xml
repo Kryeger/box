@@ -1,4 +1,5 @@
 <root>
+
     <window id="main" title="Players">
         <panel id="mainPanel" columns="1">
 
@@ -43,4 +44,104 @@
 
         </panel>
     </window>
+
+    <window id="welcome-window" title="Welcome to CS:GO Manager!" centered="">
+        <panel id="welcome-window-main-panel" columns="1" hMargin="3" vMargin="2" vSpacing="1">
+            <panel id="new-game-panel">
+                <label fgColor="#646464">Start from scratch and make it big!</label>
+                <button id="new-game-button"> New Game </button>
+            </panel>
+            <panel id="load-game-panel">
+                <label fgColor="#646464">Continue your career.</label>
+                <button id="load-game-button"> Load Game </button>
+<!--                <label id="save-found-text" fgColor="#BEBBBB">Kry Eger | 14:30:24</label>-->
+                <label id="no-save-found-text" fgColor="#952A28">No save found.</label>
+            </panel>
+            <panel id="options-panel">
+                <label fgColor="#646464">Options and stuff.</label>
+                <button id="options-button"> Options </button>
+            </panel>
+            <panel id="exit-panel">
+                <label fgColor="#646464">Sad to see you go...</label>
+                <button id="options-button"> Exit </button>
+            </panel>
+        </panel>
+    </window>
+
+    <window id="new-game-window" title="New Game" centered="">
+        <panel id="new-game-window-main-panel" columns="1" hMargin="2" vMargin="1" vSpacing="1">
+
+            <panel id="new-game-window-top-panel" columns="2">
+                <panel id="new-game-window-top-left-panel">
+                    <label fgColor="#646464" hAlign="end">First Name</label>
+                    <label fgColor="#646464" hAlign="end">Last Name</label>
+                    <label fgColor="#646464" hAlign="end">Team Name</label>
+                    <label fgColor="#646464" hAlign="end">Team Acronym</label>
+                </panel>
+                <panel id="new-game-window-top-right-panel">
+                    <textbox id="first-name-textbox" width="12">Kry</textbox>
+                    <textbox id="last-name-textbox" width="12">Eger</textbox>
+                    <textbox id="team-name-textbox" width="12">TeamName</textbox>
+                    <textbox id="team-acronym-textbox" width="12">TN</textbox>
+                </panel>
+            </panel>
+
+            <panel id="new-game-window-starting-money-panel" columns="2">
+                <panel id="new-game-window-starting-money-label" vAlign="center" lMargin="3">
+                    <label fgColor="#646464" hAlign="end">Difficulty</label>
+                </panel>
+                <panel id="new-game-window-starting-money-radio-panel" hAlign="center">
+                    <radio id="new-game-starting-money-radio">
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+                    </radio>
+                </panel>
+            </panel>
+
+            <panel id="new-game-window-bottom-panel" columns="2">
+                <panel id="new-game-window-bottom-left-panel" lMargin="8">
+                    <label fgColor="#646464" hAlign="end">Money</label>
+                </panel>
+                <panel id="new-game-window-bottom-right-panel">
+                    <label id="starting-money-label" fgColor="#85BB65" hAlign="end">$---,---.---</label>
+                </panel>
+            </panel>
+
+            <button id="start-game-button" hAlign="center"> Start </button>
+
+        </panel>
+    </window>
+
+    <window id="create-first-team-window" title="asd" centered="">
+        <panel id="create-first-team-main-panel" columns="1">
+            <panel id="create-first-team-top-panel" columns="2" hAlign="end" rMargin="1">
+                <label id="create-first-team-top-money-label" fgColor="#85BB65"></label>
+            </panel>
+            <panel id="create-first-team-players-panel" columns="9">
+
+            </panel>
+        </panel>
+    </window>
+
+    <window id="player-details-window" title="asd" centered="">
+        <panel id="player-details-main-panel" columns="1">
+            <panel id="player-details-panel" columns="2" vMargin="1">
+                <label fgColor="#646464" hAlign="end">First Name</label>
+                <label id="player-details-firstName"></label>
+                <label fgColor="#646464" hAlign="end">Nickname</label>
+                <label id="player-details-nickName"></label>
+                <label fgColor="#646464" hAlign="end">Last Name</label>
+                <label id="player-details-lastName"></label>
+                <label fgColor="#646464" hAlign="end">Skill Rating</label>
+                <label id="player-details-skillRating"></label>
+                <label fgColor="#646464" hAlign="end">Monthly Salary</label>
+                <label fgColor="#85BB65" id="player-details-salary"></label>
+                <label fgColor="#646464" hAlign="end">Signing Bonus</label>
+                <label fgColor="#85BB65" id="player-details-signingBonus"></label>
+            </panel>
+            <button id="player-details-close-window-button" hAlign="center">Back</button>
+        </panel>
+    </window>
+
 </root>

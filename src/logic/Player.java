@@ -1,5 +1,7 @@
 package logic;
 
+import utils.Money;
+
 public class Player {
 
     private String _id;
@@ -7,18 +9,22 @@ public class Player {
     private String _lastName;
     private String _nickName;
     private String _teamId;
+    private Money _salary;
+    private Money _signingBonus;
     private double _skillRating; //temporary; will be a Skills class with Accuracy, Movement etc
 
     public Player() {
     }
 
-    public Player(String id, String firstName, String lastName, String nickName, String teamId, double skillRating) {
+    public Player(String id, String firstName, String lastName, String nickName, String teamId, double skillRating, String salary, String signingBonus) {
         _id = id;
         _firstName = firstName;
         _lastName = lastName;
         _nickName = nickName;
         _teamId = teamId;
         _skillRating = skillRating;
+        _salary = new Money(salary);
+        _signingBonus = new Money(signingBonus);
     }
 
     public String getTeamId() {
@@ -37,8 +43,14 @@ public class Player {
                 ", _lastName='" + _lastName + '\'' +
                 ", _nickName='" + _nickName + '\'' +
                 ", _teamId='" + _teamId + '\'' +
+                ", _salary=" + _salary +
+                ", _signingBonus=" + _signingBonus +
                 ", _skillRating=" + _skillRating +
                 "}\n";
+    }
+
+    public String getFullName() {
+        return _firstName + " '" + _nickName + "' " + _lastName;
     }
 
     public String getId() {
@@ -79,5 +91,13 @@ public class Player {
 
     public void setSkillRating(double skillRating) {
         _skillRating = skillRating;
+    }
+
+    public Money getSalary() {
+        return _salary;
+    }
+
+    public Money getSigningBonus() {
+        return _signingBonus;
     }
 }

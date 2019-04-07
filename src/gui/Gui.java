@@ -38,6 +38,10 @@ public class Gui {
     private HashMap<String, Panel> _panels = new HashMap<>();
     private HashMap<String, Label> _labels = new HashMap<>();
     private HashMap<String, Button> _buttons = new HashMap<>();
+    private HashMap<String, TextBox> _textBoxes = new HashMap<>();
+    private HashMap<String, RadioBoxList<String>> _radioBoxLists = new HashMap<>();
+
+    private ArrayList<String> _loadedWindows = new ArrayList<>();
 
     public Gui(Screen screen, String pathToXml) {
         _window = new MultiWindowTextGUI(new SeparateTextGUIThread.Factory(), screen);
@@ -82,7 +86,6 @@ public class Gui {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
             finally {
@@ -139,12 +142,8 @@ public class Gui {
             parseTopPanel(window, childElement);
         }
 
-        if (window != null) {
-            if (element.getAttribute("wait") != null) {
-                _window.addWindowAndWait(window);
-            } else {
-                _window.addWindow(window);
-            }
+        if (window != null && element.getAttribute("load") != null) {
+            this.loadWindow(element.getAttributeValue("id"));
         }
 
         window.setPosition(new TerminalPosition(x, y));
@@ -212,8 +211,28 @@ public class Gui {
 
                     break;
 
+                case "textbox":
+
+                    TextBox textBox = createTextBox(element);
+
+                    if(textBox != null){
+                        parentPanel.addComponent(textBox);
+                    }
+
+                    break;
+
+                case "radio":
+
+                    RadioBoxList<String> radioBoxList = createRadioBoxList(element);
+
+                    if(radioBoxList != null){
+                        parentPanel.addComponent(radioBoxList);
+                    }
+
+                    break;
+
                 default:
-                    throw new Exception("Unknown element name.");
+                    throw new Exception("Unknown element name: '" + element.getName() + "'");
 
             }
 
@@ -299,6 +318,7 @@ public class Gui {
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }
+
             _windows.put(id, window);
 
             return window;
@@ -325,8 +345,8 @@ public class Gui {
             GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
             boolean vSpread = false;
             boolean hSpread = false;
-            int height = 1;
-            int width = 1;
+            int vSpan = 1;
+            int hSpan = 1;
 
             String id = null;
 
@@ -390,12 +410,12 @@ public class Gui {
                         hSpread = true;
                         break;
 
-                    case "height":
-                        height = attribute.getIntValue();
+                    case "hSpan":
+                        vSpan = attribute.getIntValue();
                         break;
 
-                    case "width":
-                        width = attribute.getIntValue();
+                    case "wSpan":
+                        hSpan = attribute.getIntValue();
                         break;
 
                     default:
@@ -409,8 +429,8 @@ public class Gui {
                     vAlign,
                     hSpread,
                     vSpread,
-                    height,
-                    width
+                    vSpan,
+                    hSpan
             ));
 
             if (id == null) {
@@ -420,6 +440,127 @@ public class Gui {
             _labels.put(id, label);
 
             return label;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private RadioBoxList createRadioBoxList(Element element) {
+
+        try {
+
+            if (!element.getName().equals("radio")) {
+                throw new Exception("Element is not a radio");
+            }
+
+            //Label default layout data
+            GridLayout.Alignment vAlign = GridLayout.Alignment.BEGINNING;
+            GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
+            boolean vSpread = false;
+            boolean hSpread = false;
+            int vSpan = 1;
+            int hSpan = 1;
+
+            int height = 3, width = 10;
+
+            String id = null;
+
+            for (Attribute attribute : element.getAttributes()) {
+
+                switch (attribute.getName()) {
+                    case "id":
+                        id = attribute.getValue();
+                        break;
+
+                    //align
+                    case "vAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                vAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                vAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                vAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    case "hAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                hAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                hAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                hAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    //spread
+                    case "vSpread":
+                        vSpread = true;
+                        break;
+
+                    case "hSpread":
+                        hSpread = true;
+                        break;
+
+                    case "hSpan":
+                        vSpan = attribute.getIntValue();
+                        break;
+
+                    case "wSpan":
+                        hSpan = attribute.getIntValue();
+                        break;
+
+                    case "width":
+                        width = attribute.getIntValue();
+                        break;
+
+                    case "height":
+                        height = attribute.getIntValue();
+                        break;
+
+                    default:
+                        throw new Exception("Unknown attribute '" + attribute.getName() + "' in element 'label'");
+                }
+
+            }
+
+            RadioBoxList radioBoxList = new RadioBoxList(new TerminalSize(width, height));
+
+            for (Element childElement : element.getChildren()) {
+                radioBoxList.addItem(childElement.getText());
+            }
+
+            radioBoxList.setLayoutData(GridLayout.createLayoutData(
+                    hAlign,
+                    vAlign,
+                    hSpread,
+                    vSpread,
+                    hSpan,
+                    vSpan
+            ));
+
+            if (id == null) {
+                id = UUID.randomUUID().toString();
+            }
+
+            _radioBoxLists.put(id, radioBoxList);
+
+            return radioBoxList;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -455,8 +596,8 @@ public class Gui {
             GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
             boolean vSpread = false;
             boolean hSpread = false;
-            int height = 1;
-            int width = 1;
+            int vSpan = 1;
+            int hSpan = 1;
 
             String id = null;
 
@@ -548,12 +689,12 @@ public class Gui {
                         hSpread = true;
                         break;
 
-                    case "height":
-                        height = attribute.getIntValue();
+                    case "vSpan":
+                        vSpan = attribute.getIntValue();
                         break;
 
-                    case "width":
-                        width = attribute.getIntValue();
+                    case "hSpan":
+                        hSpan = attribute.getIntValue();
                         break;
 
                     default:
@@ -570,13 +711,131 @@ public class Gui {
                     vAlign,
                     hSpread,
                     vSpread,
-                    height,
-                    width
+                    hSpan,
+                    vSpan
             ));
 
             _panels.put(id, panel);
 
             return panel;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private TextBox createTextBox(Element element) {
+
+        try {
+
+            if (!element.getName().equals("textbox")) {
+                throw new Exception("Element is not a textbox");
+            }
+
+            String id = null;
+            int width = 10, height = 1;
+            boolean multiline = false;
+
+            GridLayout.Alignment vAlign = GridLayout.Alignment.BEGINNING;
+            GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
+            boolean vSpread = false;
+            boolean hSpread = false;
+            int vSpan = 1;
+            int hSpan = 1;
+
+            for (Attribute attribute : element.getAttributes()) {
+                switch (attribute.getName()) {
+                    case "id":
+                        id = attribute.getValue();
+                        break;
+
+                    case "width":
+                        width = attribute.getIntValue();
+                        break;
+
+                    case "height":
+                        height = attribute.getIntValue();
+                        break;
+
+                    case "multiline":
+                        multiline = true;
+                        break;
+
+                    //align
+                    case "vAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                vAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                vAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                vAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    case "hAlign":
+
+                        switch (attribute.getValue()) {
+                            case "begin":
+                                hAlign = GridLayout.Alignment.BEGINNING;
+                                break;
+                            case "center":
+                                hAlign = GridLayout.Alignment.CENTER;
+                                break;
+                            case "end":
+                                hAlign = GridLayout.Alignment.END;
+                                break;
+                        }
+
+                        break;
+
+                    //spread
+                    case "vSpread":
+                        vSpread = true;
+                        break;
+
+                    case "hSpread":
+                        hSpread = true;
+                        break;
+
+                    case "vSpan":
+                        vSpan = attribute.getIntValue();
+                        break;
+
+                    case "hSpan":
+                        hSpan = attribute.getIntValue();
+                        break;
+
+                    default:
+                        throw new Exception("Unknown attribute '" + attribute.getName() + "' in element 'panel'");
+                }
+            }
+
+            if (id == null) {
+                id = UUID.randomUUID().toString();
+            }
+
+            TextBox textBox = new TextBox(new TerminalSize(width, height), element.getText(), (multiline) ? TextBox.Style.MULTI_LINE : TextBox.Style.SINGLE_LINE);
+
+            textBox.setLayoutData(GridLayout.createLayoutData(
+                    hAlign,
+                    vAlign,
+                    hSpread,
+                    vSpread,
+                    hSpan,
+                    vSpan
+            ));
+
+            _textBoxes.put(id, textBox);
+
+            return textBox;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -599,8 +858,8 @@ public class Gui {
             GridLayout.Alignment hAlign = GridLayout.Alignment.BEGINNING;
             boolean vSpread = false;
             boolean hSpread = false;
-            int height = 1;
-            int width = 1;
+            int vSpan = 1;
+            int hSpan = 1;
 
             String id = null;
 
@@ -657,12 +916,12 @@ public class Gui {
                         hSpread = true;
                         break;
 
-                    case "height":
-                        height = attribute.getIntValue();
+                    case "vSpan":
+                        vSpan = attribute.getIntValue();
                         break;
 
-                    case "width":
-                        width = attribute.getIntValue();
+                    case "hSpan":
+                        hSpan = attribute.getIntValue();
                         break;
 
                     default:
@@ -676,8 +935,8 @@ public class Gui {
                     vAlign,
                     hSpread,
                     vSpread,
-                    height,
-                    width
+                    hSpan,
+                    vSpan
             ));
 
             if (id == null) {
@@ -689,41 +948,53 @@ public class Gui {
             return button;
 
         } catch (Exception e) {
-        e.printStackTrace();
-        return null;
-    }
-    }
-
-    public HashMap<String, Window> getWindows() {
-        return _windows;
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public void setWindows(HashMap<String, Window> windows) {
-        _windows = windows;
+    public HashMap<String, RadioBoxList<String>> getRadioBoxLists() {
+        return _radioBoxLists;
     }
 
-    public HashMap<String, Panel> getPanels() {
-        return _panels;
+    public void setRadioBoxLists(HashMap<String, RadioBoxList<String>> radioBoxLists) {
+        _radioBoxLists = radioBoxLists;
     }
 
-    public void setPanels(HashMap<String, Panel> panels) {
-        _panels = panels;
+    /**
+     * Load a window on the screen.
+     * @param windowId
+     */
+    public void loadWindow(String windowId){
+        _window.addWindow(getWindow(windowId));
+        _loadedWindows.add(windowId);
     }
 
-    public HashMap<String, Label> getLabels() {
-        return _labels;
+    /**
+     * Unload all windows from the screen and then load one.
+     * @param windowId
+     */
+    public void showWindow(String windowId){
+        _loadedWindows.forEach((id) -> _window.removeWindow(getWindow(id)));
+        _loadedWindows.clear();
+        loadWindow(windowId);
     }
 
-    public void setLabels(HashMap<String, Label> labels) {
-        _labels = labels;
+    /**
+     * Unload all windows from the screen.
+     * @param windowId
+     */
+    public void unloadWindow(String windowId){
+        _window.removeWindow(getWindow(windowId));
+        _loadedWindows.remove(windowId);
     }
 
-    public HashMap<String, Button> getButtons() {
-        return _buttons;
+    public void setActiveWindow(String windowId){
+        _window.setActiveWindow(getWindow(windowId));
     }
 
-    public void setButtons(HashMap<String, Button> buttons) {
-        _buttons = buttons;
+    public ArrayList<String> getLoadedWindows() {
+        return _loadedWindows;
     }
 
     public SeparateTextGUIThread getThread() {
@@ -732,5 +1003,29 @@ public class Gui {
 
     public MultiWindowTextGUI getWindow() {
         return _window;
+    }
+
+    public Label getLabel(String id){
+        return _labels.get(id);
+    }
+
+    public Button getButton(String id){
+        return _buttons.get(id);
+    }
+
+    public TextBox getTextBox(String id){
+        return _textBoxes.get(id);
+    }
+
+    public RadioBoxList<String> getRadioBoxList(String id){
+        return _radioBoxLists.get(id);
+    }
+
+    public Panel getPanel(String id){
+        return _panels.get(id);
+    }
+
+    public Window getWindow(String id){
+        return _windows.get(id);
     }
 }

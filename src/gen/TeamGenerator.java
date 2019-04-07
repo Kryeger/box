@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class TeamGenerator implements Generator<Team>{
+public class TeamGenerator {
 
     private static String pathToAdj = "./gen/teams/adj.csv";
     private static String pathToLocations = "./gen/teams/locations.csv";
@@ -24,10 +24,10 @@ public class TeamGenerator implements Generator<Team>{
 
     private static Random randomGenerator = new Random();
 
-    private static ArrayList<String> _adj= new ArrayList<>();
-    private static ArrayList<String> _locations= new ArrayList<>();
-    private static ArrayList<String> _theLocations= new ArrayList<>();
-    private static ArrayList<String> _nouns= new ArrayList<>();
+    private static ArrayList<String> _adj = new ArrayList<>();
+    private static ArrayList<String> _locations = new ArrayList<>();
+    private static ArrayList<String> _theLocations = new ArrayList<>();
+    private static ArrayList<String> _nouns = new ArrayList<>();
 
     private static char[] _acronymSymbols = {'_', '^', '-', '|', '/', '\\'};
 
@@ -91,10 +91,11 @@ public class TeamGenerator implements Generator<Team>{
 
     }
 
-    public TeamGenerator() {}
+    public TeamGenerator() {
+    }
 
     public Team generate() {
-        List<Pair<String, Double>> presetWeights= new ArrayList<>();
+        List<Pair<String, Double>> presetWeights = new ArrayList<>();
         presetWeights.add(new Pair<>("adjNoun", adjNounChance));
         presetWeights.add(new Pair<>("nounTheLocation", nounTheLocationChance));
         presetWeights.add(new Pair<>("theNounFromLocation", theNounFromLocationChance));
@@ -104,20 +105,20 @@ public class TeamGenerator implements Generator<Team>{
 
         int nextAdj, nextNoun, nextTheLocation, nextLocation;
 
-        switch(new EnumeratedDistribution<>(presetWeights).sample()){
+        switch (new EnumeratedDistribution<>(presetWeights).sample()) {
             case "adjNoun":
                 nextAdj = randomGenerator.nextInt(_adj.size());
                 newTeamName.append(_adj.get(nextAdj));
 
                 newTeamAcronym.append(_adj.get(nextAdj).substring(0, 1).toUpperCase());
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_adj.get(nextAdj).substring(1, 2));
                 }
 
                 newTeamName.append(" ");
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_acronymSymbols[randomGenerator.nextInt(_acronymSymbols.length)]);
                 }
 
@@ -126,7 +127,7 @@ public class TeamGenerator implements Generator<Team>{
 
                 newTeamAcronym.append(_nouns.get(nextNoun).substring(0, 1).toUpperCase());
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_nouns.get(nextNoun).substring(1, 2));
                 }
 
@@ -138,16 +139,16 @@ public class TeamGenerator implements Generator<Team>{
 
                 newTeamAcronym.append(_nouns.get(nextNoun).substring(0, 1).toUpperCase());
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_nouns.get(nextNoun).substring(1, 2));
                 }
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_acronymSymbols[randomGenerator.nextInt(_acronymSymbols.length)]);
                 }
 
-                if(randomGenerator.nextBoolean()){
-                     newTeamName.append(" from the ");
+                if (randomGenerator.nextBoolean()) {
+                    newTeamName.append(" from the ");
                 } else {
                     newTeamName.append(" of the ");
                 }
@@ -157,7 +158,7 @@ public class TeamGenerator implements Generator<Team>{
                 newTeamAcronym.append(_theLocations.get(nextTheLocation).substring(0, 1).toUpperCase());
 
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_theLocations.get(nextTheLocation).substring(1, 2));
                 }
 
@@ -171,11 +172,11 @@ public class TeamGenerator implements Generator<Team>{
                 newTeamAcronym.append(_nouns.get(nextNoun).substring(0, 1).toUpperCase());
 
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_nouns.get(nextNoun).substring(1, 2));
                 }
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_acronymSymbols[randomGenerator.nextInt(_acronymSymbols.length)]);
                 }
                 newTeamName.append(" from ");
@@ -185,14 +186,14 @@ public class TeamGenerator implements Generator<Team>{
                 newTeamAcronym.append(_locations.get(nextLocation).substring(0, 1).toUpperCase());
 
 
-                if(randomGenerator.nextBoolean()){
+                if (randomGenerator.nextBoolean()) {
                     newTeamAcronym.append(_locations.get(nextLocation).substring(1, 2));
                 }
 
                 break;
         }
 
-        return new Team(UUID.randomUUID().toString(), newTeamName.toString(), newTeamAcronym.toString());
+        return new Team(UUID.randomUUID().toString(), newTeamName.toString(), newTeamAcronym.toString(), String.valueOf(randomGenerator.nextInt(100000) + 100000));
 
     }
 }

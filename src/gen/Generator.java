@@ -1,5 +1,5 @@
 package gen;
 
 public interface Generator<T> {
-    T generate();
+    T generate(double median);
 }
