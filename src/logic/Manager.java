@@ -2,14 +2,24 @@ package logic;
 
 public class Manager {
 
+    private String _id;
     private String _firstName;
     private String _lastName;
     private String _teamId;
 
-    public Manager(String firstName, String lastName, String teamId) {
+    public Manager(String id, String firstName, String lastName, String teamId) {
+        _id = id;
         _firstName = firstName;
         _lastName = lastName;
         _teamId = teamId;
+    }
+
+    public String getId() {
+        return _id;
+    }
+
+    public void setId(String id) {
+        _id = id;
     }
 
     public String getFirstName() {

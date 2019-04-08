@@ -6,6 +6,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import gen.MalePlayerGenerator;
 import gen.TeamGenerator;
 import org.apache.commons.math3.distribution.CauchyDistribution;
+import utils.Time;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,6 +28,8 @@ public class World {
     private HashMap<String, Player> _players = new HashMap<>();
     private HashMap<String, Manager> _managers = new HashMap<>();
     private HashMap<String, Match> _matches = new HashMap<>();
+
+    private Time _time = new Time();
 
     @Override
     public String toString() {
@@ -53,7 +56,7 @@ public class World {
 
         for (int i = 0; i < 3; i++) {
 
-            League newLeague = new League("League" + (i + 1));
+            League newLeague = new League(UUID.randomUUID().toString(), "League" + (i + 1));
 
             for (int j = 0; j < 30; j++) {
 
@@ -65,6 +68,7 @@ public class World {
                     Player newPlayer = mpg.generate((3 - i) * 25);
                     _players.put(newPlayer.getId(), newPlayer);
                     newTeam.insertPlayer(newPlayer);
+
                 }
 
                 newLeague.insertTeam(newTeam);
@@ -75,8 +79,12 @@ public class World {
         }
 
         _leagues.forEach((id, league) -> {
-            System.out.println(league.toString());
+            league.generateSchedule();
         });
+
+
+
+        loop();
     }
 
     private void initTeams(String pathToTeams) {
@@ -108,6 +116,13 @@ public class World {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loop(){
+
+
+
+        //loop();
     }
 
     private void initPlayers(String pathToPlayers) {

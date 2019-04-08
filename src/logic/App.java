@@ -132,6 +132,7 @@ public class App {
                     String lastName = _gui.getTextBox("last-name-textbox").getText();
 
                     _player = new Manager(
+                            "player",
                             firstName,
                             lastName,
                             playerTeamId
