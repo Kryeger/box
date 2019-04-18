@@ -16,6 +16,8 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import gen.MalePlayerGenerator;
 import gui.Gui;
 import gui.KeyStrokeListener;
+import logic.service.ManagerService;
+import logic.service.TeamService;
 
 import java.awt.*;
 import java.io.IOException;
@@ -120,13 +122,13 @@ public class App {
 
                     String[] moneyOptions = {"30000", "20000", "10000"};
                     String playerTeamId = UUID.randomUUID().toString();
-                    _world.getTeams().put(playerTeamId, new Team(
+                    TeamService.insertTeam(new Team(
                             playerTeamId,
                             teamName,
                             teamAcronym,
                             moneyOptions[_gui.getRadioBoxLists().get("new-game-starting-money-radio").getCheckedItemIndex()]));
 
-                    _playerTeam = _world.getTeams().get(playerTeamId);
+                    _playerTeam = TeamService.getTeamById(playerTeamId);
 
                     String firstName = _gui.getTextBox("first-name-textbox").getText();
                     String lastName = _gui.getTextBox("last-name-textbox").getText();
@@ -138,7 +140,7 @@ public class App {
                             playerTeamId
                     );
 
-                    _world.getManagers().put("player", _player);
+                    ManagerService.insertManager(_player);
 
                     //spawn recruitment window
                     ((AbstractWindow)_gui.getWindow("create-first-team-window")).setTitle(teamName + " | Recruit Players");
@@ -206,12 +208,21 @@ public class App {
                     _gui.getWindow("create-first-team-window").setFocusedInteractable(detailsButton);
                     _gui.getPanel("create-first-team-players-panel").addComponent(detailsButton);
 
-                    Button recruitButton = new Button(" Recruit ");
+                    Button recruitButton = new Button("  Recruit  ");
+
+                    recruitButton.setLayoutData(GridLayout.createLayoutData(
+                            GridLayout.Alignment.CENTER,
+                            GridLayout.Alignment.CENTER,
+                            true,
+                            true,
+                            1, 1
+                    ));
+
                     recruitButton.addListener((button) -> {
-                        if(button.getLabel().equals(" Recruit ")){
+                        if(button.getLabel().equals("  Recruit  ")){
                             button.setLabel(" Recruited ");
                         } else {
-                            button.setLabel(" Recruit ");
+                            button.setLabel("  Recruit  ");
                         }
                     });
 

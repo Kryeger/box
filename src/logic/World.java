@@ -5,7 +5,10 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import gen.MalePlayerGenerator;
 import gen.TeamGenerator;
-import org.apache.commons.math3.distribution.CauchyDistribution;
+import logic.service.LeagueService;
+import logic.service.PlayerService;
+import logic.service.TeamService;
+import org.apache.commons.collections4.map.LinkedMap;
 import utils.Time;
 
 import java.io.IOException;
@@ -23,36 +26,17 @@ public class World {
 
     String pathToMatches;
 
-    private HashMap<String, League> _leagues = new HashMap<>();
-    private HashMap<String, Team> _teams = new HashMap<>();
-    private HashMap<String, Player> _players = new HashMap<>();
-    private HashMap<String, Manager> _managers = new HashMap<>();
-    private HashMap<String, Match> _matches = new HashMap<>();
-
     private Time _time = new Time();
 
     @Override
     public String toString() {
-        return "World{" +
-                "pathToLeagues='" + pathToLeagues + '\'' +
-                ", pathToPlayers='" + pathToPlayers + '\'' +
-                ", pathToTeams='" + pathToTeams + '\'' +
-                ", pathToManagers='" + pathToManagers + '\'' +
-                ", pathToMatches='" + pathToMatches + '\'' +
-                ", _leagues=" + _leagues +
-                ", _teams=" + _teams +
-                ", _players=" + _players +
-                ", _managers=" + _managers +
-                ", _matches=" + _matches +
-                "}\n";
+        return "World\n";
     }
 
     public World() {
-
-        CauchyDistribution teamSkillDistribution = new CauchyDistribution(60, 8);
         
-        MalePlayerGenerator mpg = new MalePlayerGenerator();
-        TeamGenerator tg = new TeamGenerator();
+        MalePlayerGenerator malePlayerGenerator = new MalePlayerGenerator();
+        TeamGenerator teamGenerator = new TeamGenerator();
 
         for (int i = 0; i < 3; i++) {
 
@@ -60,26 +44,28 @@ public class World {
 
             for (int j = 0; j < 30; j++) {
 
-                Team newTeam = tg.generate();
-                _teams.put(newTeam.getId(), newTeam);
+                Team newTeam = teamGenerator.generate();
+                TeamService.insertTeam(newTeam);
 
                 for (int k = 0; k < 5; k++) {
 
-                    Player newPlayer = mpg.generate((3 - i) * 25);
-                    _players.put(newPlayer.getId(), newPlayer);
-                    newTeam.insertPlayer(newPlayer);
+                    Player newPlayer = malePlayerGenerator.generate((3 - i) * 25);
+                    PlayerService.insertPlayer(newPlayer);
+                    TeamService.insertPlayerInTeam(newPlayer.getId(), newTeam.getId());
 
                 }
 
                 newLeague.insertTeam(newTeam);
+                newTeam.insertActiveLeague(newLeague.getId());
             }
 
-            _leagues.put(UUID.randomUUID().toString(), newLeague);
+            LeagueService.insertLeague(newLeague);
 
         }
 
-        _leagues.forEach((id, league) -> {
-            league.generateSchedule();
+        LeagueService.getAll().forEach((id, league) -> {
+            league.createNewSeason();
+            league.simulateNextMatch();
         });
 
 
@@ -110,7 +96,7 @@ public class World {
 
             while (teamIterator.hasNext()) {
                 Team newTeam = teamIterator.next();
-                _teams.put(newTeam.getId(), newTeam);
+                TeamService.insertTeam(newTeam);
             }
 
         } catch (IOException e) {
@@ -149,11 +135,9 @@ public class World {
 
             while (playerIterator.hasNext()) {
                 Player newPlayer = playerIterator.next();
-                _players.put(newPlayer.getId(), newPlayer);
+                PlayerService.insertPlayer(newPlayer);
 
-                if(_teams.containsKey(newPlayer.getTeamId())){
-                    _teams.get(newPlayer.getTeamId()).insertPlayer(_players.get(newPlayer.getId()));
-                }
+                TeamService.insertPlayerInTeam(newPlayer.getId(), newPlayer.getTeamId());
             }
 
         } catch (IOException e) {
@@ -171,15 +155,4 @@ public class World {
     private void initMatches(String pathToMatches) {
     }
 
-    public HashMap<String, Player> getPlayers() {
-        return _players;
-    }
-
-    public HashMap<String, Team> getTeams() {
-        return _teams;
-    }
-
-    public HashMap<String, Manager> getManagers() {
-        return _managers;
-    }
 }

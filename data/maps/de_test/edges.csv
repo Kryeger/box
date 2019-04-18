@@ -1,0 +1,14 @@
+start ,end   ,distance,visibility
+"T"   ,"TA"  ,10      ,5
+"TA"  ,"LTA" ,10      ,5
+"TA"  ,"RTA" ,10      ,5
+"LTA" ,"RCTA",-1      ,5
+"LTA" ,"A"   ,10      ,5
+"RTA" ,"A"   ,10      ,5
+"RTA" ,"LCTA",-1      ,5
+"RCTA","A"   ,10      ,5
+"LCTA","A"   ,10      ,5
+"RCTA","LCTA",10      ,5
+"CTA" ,"RCTA",10      ,5
+"CTA" ,"LCTA",10      ,5
+"CT"  ,"CTA" ,10      ,5

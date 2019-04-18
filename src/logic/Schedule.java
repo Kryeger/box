@@ -3,21 +3,21 @@ package logic;
 public class Schedule {
 
     private String _id;
-    private Team _homeTeam;
-    private Team _awayTeam;
+    private String _homeTeamId;
+    private String _awayTeamId;
 
-    public Schedule(String id, Team homeTeam, Team awayTeam) {
+    public Schedule(String id, String homeTeamId, String awayTeamId) {
         _id = id;
-        _homeTeam = homeTeam;
-        _awayTeam = awayTeam;
+        _homeTeamId = homeTeamId;
+        _awayTeamId = awayTeamId;
     }
 
     @Override
     public String toString() {
         return "Schedule{" +
                 "_id='" + _id + '\'' +
-                ", _homeTeam=" + _homeTeam +
-                ", _awayTeam=" + _awayTeam +
+                ", _homeTeamId=" + _homeTeamId +
+                ", _awayTeamId=" + _awayTeamId +
                 "}\n";
     }
 
@@ -29,20 +29,20 @@ public class Schedule {
         _id = id;
     }
 
-    public Team getHomeTeam() {
-        return _homeTeam;
+    public String getHomeTeam() {
+        return _homeTeamId;
     }
 
-    public void setHomeTeam(Team homeTeam) {
-        _homeTeam = homeTeam;
+    public void setHomeTeam(String homeTeamId) {
+        _homeTeamId = homeTeamId;
     }
 
-    public Team getAwayTeam() {
-        return _awayTeam;
+    public String getAwayTeam() {
+        return _awayTeamId;
     }
 
-    public void setAwayTeam(Team awayTeam) {
-        _awayTeam = awayTeam;
+    public void setAwayTeam(String awayTeamId) {
+        _awayTeamId = awayTeamId;
     }
 
 }

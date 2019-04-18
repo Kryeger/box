@@ -1,18 +1,18 @@
 package logic;
 
+import logic.service.SeasonService;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class League {
 
     private String _id;
     private String _name;
-    private HashMap<String, Season> _seasons = new HashMap<>();
-    private HashMap<String, Team> _teams = new HashMap<>();
-    private HashMap<String, Schedule> _schedules = new HashMap<>();
+    private ArrayList<String> _seasons = new ArrayList<>();
+    private ArrayList<String> _teams = new ArrayList<>();
 
     public League(String id, String name) {
         _id = id;
@@ -37,48 +37,29 @@ public class League {
     }
 
     public void insertTeam(Team team) {
-        _teams.put(team.getId(), team);
+        _teams.add(team.getId());
     }
 
-    public void insertSeason(Season season) {
-        _seasons.put(season.getId(), season);
+    public void insertSeason(String seasonId) {
+        _seasons.add(seasonId);
     }
 
-    public void insertSchedule(Schedule schedule) {
-        _schedules.put(schedule.getId(), schedule);
+    public void createNewSeason() {
+
+        Season season = new Season(UUID.randomUUID().toString(), "Season " + (_seasons.size() + 1), _id);
+
+        SeasonService.insertSeason(season);
+
+        _teams.forEach(season::insertTeam);
+
+        season.generateSchedule();
+
+        insertSeason(season.getId());
+
     }
 
-    public void generateSchedule() {
-
-        ArrayList<String> teams = new ArrayList<>(_teams.keySet());
-        ArrayList<Pair<Integer, Integer>> pairs = new ArrayList<>();
-
-        for(int i = 0; i < teams.size(); i++){
-            for(int j = 0; j < teams.size(); j++){
-                if(i != j){
-                    pairs.add(new ImmutablePair<>(i, j));
-                }
-            }
-        }
-
-        Collections.shuffle(pairs);
-
-        pairs.forEach((el) -> {
-            insertSchedule(
-                    new Schedule(
-                            UUID.randomUUID().toString(),
-
-                            _teams.get(
-                                    teams.get(
-                                            el.getLeft())),
-
-                            _teams.get(
-                                    teams.get(
-                                            el.getRight()))
-                    )
-            );
-        });
-
+    public void simulateNextMatch() {
+        SeasonService.getSeasonById(_seasons.get(_seasons.size() - 1)).simulateNextMatch();
     }
 
 }

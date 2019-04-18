@@ -1,9 +1,10 @@
 package logic;
 
+import logic.service.PlayerService;
 import utils.Money;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Team {
 
@@ -11,8 +12,9 @@ public class Team {
     private String _name;
     private String _acronym;
     private Manager _manager;
-    private ArrayList<Player> _players = new ArrayList<>();
+    private ArrayList<String> _players = new ArrayList<>();
     private Money _money;
+    private ArrayList<String> _activeLeagues = new ArrayList<>();
 
     public Team() {
     }
@@ -22,6 +24,18 @@ public class Team {
         _name = name;
         _acronym = acronym;
         _money = new Money(money);
+    }
+
+    public void insertActiveLeague(String leagueId){
+        _activeLeagues.add(leagueId);
+    }
+
+    public void removeActiveLeague(String leagueId){
+        _activeLeagues.remove(leagueId);
+    }
+
+    public ArrayList<String> getPlayers() {
+        return _players;
     }
 
     public Money getMoney() {
@@ -43,14 +57,6 @@ public class Team {
                 "}\n";
     }
 
-    public String getId() {
-        return _id;
-    }
-
-    public void setId(String id) {
-        _id = id;
-    }
-
     public String getName() {
         return _name;
     }
@@ -67,11 +73,19 @@ public class Team {
         _manager = manager;
     }
 
-    public void insertPlayer(Player player) {
+    public void insertPlayer(String playerId) {
         if (_players.size() < 5) {
-            _players.add(player);
-            player.setTeamId(getId());
+            _players.add(playerId);
+            PlayerService.getPlayerById(playerId).setTeamId(getId());
         }
+    }
+
+    public String getId() {
+        return _id;
+    }
+
+    public void setId(String id) {
+        _id = id;
     }
 
     public String getAcronym() {
