@@ -16,8 +16,8 @@ public class SeasonService {
         return _instance;
     }
 
-    public void createSeason(String id, String name) {
-        _instance._seasons.put(id, new Season(id, name));
+    public void createSeason(String id, String name, String leagueId) {
+        _instance._seasons.put(id, new Season(id, name, leagueId));
     }
 
     public static void insertSeason(Season season){

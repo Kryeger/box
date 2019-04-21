@@ -113,18 +113,23 @@
         </panel>
     </window>
 
-    <window id="create-first-team-window" title="asd" centered="">
+    <window id="create-first-team-window" title="" centered="">
         <panel id="create-first-team-main-panel" columns="1">
-            <panel id="create-first-team-top-panel" columns="2" hAlign="end" rMargin="1">
+            <panel id="create-first-team-top-panel" columns="1" hAlign="end" rMargin="1" bMargin="1">
                 <label id="create-first-team-top-money-label" fgColor="#85BB65"></label>
             </panel>
-            <panel id="create-first-team-players-panel" columns="9">
 
+            <panel id="create-first-team-players-panel" columns="5">
+
+            </panel>
+
+            <panel id="create-first-team-bottom-panel" hAlign="end" rMargin="1" tMargin="1">
+                <button id="create-first-team-next-button">Next</button>
             </panel>
         </panel>
     </window>
 
-    <window id="player-details-window" title="asd" centered="">
+    <window id="player-details-window" title="" centered="">
         <panel id="player-details-main-panel" columns="1">
             <panel id="player-details-panel" columns="2" vMargin="1">
                 <label fgColor="#646464" hAlign="end">First Name</label>
@@ -133,8 +138,6 @@
                 <label id="player-details-nickName"></label>
                 <label fgColor="#646464" hAlign="end">Last Name</label>
                 <label id="player-details-lastName"></label>
-                <label fgColor="#646464" hAlign="end">Skill Rating</label>
-                <label id="player-details-skillRating"></label>
                 <label fgColor="#646464" hAlign="end">Monthly Salary</label>
                 <label fgColor="#85BB65" id="player-details-salary"></label>
                 <label fgColor="#646464" hAlign="end">Signing Bonus</label>

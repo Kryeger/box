@@ -38,4 +38,5 @@ public class ManagerService {
     public static HashMap<String, Manager> getAll() {
         return _instance._managers;
     }
+
  }

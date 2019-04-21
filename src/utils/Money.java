@@ -10,6 +10,10 @@ public class Money {
         setAmount(amount);
     }
 
+    public Money(Money amount){
+        _amount = amount._amount;
+    }
+
     public void setAmount(String amount){
         if(amount.equals("0")){
             _amount = new BigInteger("0");
@@ -22,7 +26,7 @@ public class Money {
         BigInteger thousand = new BigInteger("1000");
         BigInteger divided = _amount.divide(thousand);
         String remainder = _amount.remainder(thousand).toString();
-        return '$' + divided.toString() + '.' + remainder.toString();
+        return '$' + divided.toString() + '.' + remainder;
     }
 
     public BigInteger convert(String amount){
@@ -65,6 +69,18 @@ public class Money {
     public void plus(String amount){
         if(!amount.equals("0"))
             _amount = _amount.add(convert(amount));
+    }
+
+    public BigInteger getAmount() {
+        return _amount;
+    }
+
+    public void plus(Money amount) {
+        _amount = _amount.add(amount.getAmount());
+    }
+
+    public void minus(Money amount) {
+        _amount = _amount.subtract(amount.getAmount());
     }
 
     public void minus(int amount){

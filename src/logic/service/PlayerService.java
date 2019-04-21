@@ -2,6 +2,7 @@ package logic.service;
 
 import logic.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PlayerService {
@@ -39,5 +40,16 @@ public class PlayerService {
         return _instance._players.containsKey(playerId);
     }
 
+    public static ArrayList<String> getFreeAgents() {
+        ArrayList<String> freeAgents = new ArrayList<>();
+
+        _instance._players.forEach((id, player) -> {
+            if(player.getTeamId().equals("")){
+                freeAgents.add(player.getId());
+            }
+        });
+
+        return freeAgents;
+    }
 
 }

@@ -4,10 +4,9 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import gen.MalePlayerGenerator;
+import gen.ManagerGenerator;
 import gen.TeamGenerator;
-import logic.service.LeagueService;
-import logic.service.PlayerService;
-import logic.service.TeamService;
+import logic.service.*;
 import org.apache.commons.collections4.map.LinkedMap;
 import utils.Time;
 
@@ -26,13 +25,6 @@ public class World {
 
     String pathToMatches;
 
-    private Time _time = new Time();
-
-    @Override
-    public String toString() {
-        return "World\n";
-    }
-
     public World() {
         
         MalePlayerGenerator malePlayerGenerator = new MalePlayerGenerator();
@@ -46,6 +38,10 @@ public class World {
 
                 Team newTeam = teamGenerator.generate();
                 TeamService.insertTeam(newTeam);
+
+                Manager newManager = ManagerGenerator.generate();
+                newManager.setTeamId(newTeam.getId());
+                ManagerService.insertManager(newManager);
 
                 for (int k = 0; k < 5; k++) {
 
@@ -65,12 +61,15 @@ public class World {
 
         LeagueService.getAll().forEach((id, league) -> {
             league.createNewSeason();
-            league.simulateNextMatch();
         });
 
+        for (int i = 1; i < 5; i += 1) {
+            for (int j = 0; j < 3; j++) {
+                Player newPlayer = malePlayerGenerator.generate(i * 10);
+                PlayerService.insertPlayer(newPlayer);
+            }
+        }
 
-
-        loop();
     }
 
     private void initTeams(String pathToTeams) {
@@ -102,13 +101,6 @@ public class World {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void loop(){
-
-
-
-        //loop();
     }
 
     private void initPlayers(String pathToPlayers) {
