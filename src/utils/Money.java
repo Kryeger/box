@@ -11,6 +11,10 @@ public class Money {
     }
 
     public Money(Money amount){
+        setAmount(amount);
+    }
+
+    public void setAmount(Money amount){
         _amount = amount._amount;
     }
 
@@ -90,6 +94,10 @@ public class Money {
     public void minus(String amount){
         if(!amount.equals("0"))
             _amount = _amount.subtract(convert(amount));
+    }
+
+    public boolean lessThan(Money amount){
+        return (_amount.compareTo(amount._amount) <= -1);
     }
 
 }

@@ -147,4 +147,39 @@
         </panel>
     </window>
 
+    <window id="main-window" title="" centered="">
+        <panel id="main-window-main-panel" columns="2" hSpan="10" vSpan="10">
+            <panel id="main-window-left-panel">
+                <panel id="main-window-team-info-panel" columns="2">
+                    <panel id="main-window-team-name-panel">
+                        <label id="main-window-team-name">Full Team Name</label>
+                    </panel>
+                    <panel id="main-window-money-panel">
+                        <label id="main-window-money" fgColor="#85BB65">$54,382.298</label>
+                    </panel>
+                </panel>
+            </panel>
+            <panel id="main-window-right-panel">
+                <panel id="main-window-time-panel" hAlign="center">
+                    <label id="main-window-date" hAlign="center">1 / 1 / 1</label>
+                    <label id="main-window-time" hAlign="center">13:37</label>
+                </panel>
+                <panel id="main-window-coming-up-panel" tMargin="1">
+                    <label hAlign="center" fgColor="#646464">Coming up</label>
+                    <panel id="main-window-coming-up-items-panel">
+                        <panel id="main-window-coming-up-item" columns="2">
+                            <label>NiP vs NaVi | 14:00</label>
+                        </panel>
+                        <panel id="main-window-coming-up-item" columns="2">
+                            <label>NiP vs NaVi | 14:00</label>
+                        </panel>
+                        <panel id="main-window-coming-up-item" columns="2">
+                            <label>NiP vs NaVi | 14:00</label>
+                        </panel>
+                    </panel>
+                </panel>
+            </panel>
+        </panel>
+    </window>
+
 </root>

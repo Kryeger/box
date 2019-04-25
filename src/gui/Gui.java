@@ -169,6 +169,10 @@ public class Gui {
 
         Panel panel = createPanel(element);
 
+        if(panel.getFillColorOverride() == null && parentPanel.getFillColorOverride() != null){
+            panel.setFillColorOverride(parentPanel.getFillColorOverride());
+        }
+
         for (Element childElement : element.getChildren()) {
 
             if (childElement.getName().equals("panel")) {
@@ -196,6 +200,11 @@ public class Gui {
                     Label label = createLabel(element);
 
                     if(label != null){
+
+                        if(label.getBackgroundColor() == null && parentPanel.getFillColorOverride() != null){
+                            label.setBackgroundColor(parentPanel.getFillColorOverride());
+                        }
+
                         parentPanel.addComponent(label);
                     }
 
@@ -609,6 +618,11 @@ public class Gui {
 
                     case "columns":
                         //already used this information above
+                        break;
+
+                    case "bgColor":
+                        Color bgColor = Color.decode(attribute.getValue());
+                        panel.setFillColorOverride(TextColor.Indexed.fromRGB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
                         break;
 
                     //spacing

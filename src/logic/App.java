@@ -126,6 +126,7 @@ public class App {
 
                     String[] moneyOptions = {"30000", "20000", "10000"};
                     String playerTeamId = UUID.randomUUID().toString();
+
                     TeamService.insertTeam(new Team(
                             playerTeamId,
                             teamName,
@@ -175,7 +176,16 @@ public class App {
                 _gui.getPanel("create-first-team-players-panel").removeAllComponents();
 
                 //headers
-                _gui.getPanel("create-first-team-players-panel").addComponent(new Label("Name").setForegroundColor(TextColor.Factory.fromString("#646464")));
+                Label nameHeader = new Label("Name").setForegroundColor(TextColor.Factory.fromString("#646464"));
+                nameHeader.setLayoutData(GridLayout.createLayoutData(
+                        GridLayout.Alignment.CENTER,
+                        GridLayout.Alignment.CENTER,
+                        true,
+                        true,
+                        1,
+                        1
+                ));
+                _gui.getPanel("create-first-team-players-panel").addComponent(nameHeader);
                 _gui.getPanel("create-first-team-players-panel").addComponent(new Label("Salary").setForegroundColor(TextColor.Factory.fromString("#646464")));
                 _gui.getPanel("create-first-team-players-panel").addComponent(new Label("Signing Fee").setForegroundColor(TextColor.Factory.fromString("#646464")));
 
@@ -242,16 +252,37 @@ public class App {
 
                         _gui.getLabel("create-first-team-top-money-label").setText(playerMoney.toString());
 
-                        _gui.getButton("create-first-team-next-button").addListener((button1) -> {
-
-                        });
-
                     });
 
                     _gui.getPanel("create-first-team-players-panel").addComponent(recruitButton);
                 });
 
+                _gui.getButton("create-first-team-next-button").addListener((button) -> {
+
+                    Money owedMoney = new Money("0");
+                    Money playerMoney = new Money(_playerTeam.getMoney());
+
+                    if(selectedPlayers.size() == 5 && owedMoney.lessThan(playerMoney)){
+
+                        selectedPlayers.forEach((selectedPlayerId) -> {
+                            _playerTeam.insertPlayer(selectedPlayerId);
+                        });
+
+                        _playerTeam.getMoney().minus(owedMoney);
+
+                        drawView("main-window");
+                    }
+                });
+
             } break;
+
+            case "main-window": {
+                _gui.showWindow("main-window");
+                ((AbstractWindow)_gui.getWindow("main-window")).setTitle(_playerTeam.getName());
+
+            } break;
+
+
         }
     }
 }
