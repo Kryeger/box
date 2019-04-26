@@ -1,24 +1,27 @@
 package logic;
 
+import utils.Time;
+
 public class Schedule {
 
     private String _id;
     private String _homeTeamId;
     private String _awayTeamId;
+    private Time _time;
 
-    public Schedule(String id, String homeTeamId, String awayTeamId) {
+    public Schedule(String id, String homeTeamId, String awayTeamId, Time time) {
         _id = id;
         _homeTeamId = homeTeamId;
         _awayTeamId = awayTeamId;
+        _time = time;
     }
 
-    @Override
-    public String toString() {
-        return "Schedule{" +
-                "_id='" + _id + '\'' +
-                ", _homeTeamId=" + _homeTeamId +
-                ", _awayTeamId=" + _awayTeamId +
-                "}\n";
+    public Time getTime() {
+        return _time;
+    }
+
+    public void setTime(Time time) {
+        _time = time;
     }
 
     public String getId() {

@@ -1,6 +1,8 @@
 package logic;
 
 import logic.service.SeasonService;
+import logic.service.TeamService;
+import logic.service.TimeService;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,8 +38,18 @@ public class League {
                 "}\n";
     }
 
+    public ArrayList<String> getTeams() {
+        return _teams;
+    }
+
     public void insertTeam(Team team) {
         _teams.add(team.getId());
+        team.insertActiveLeague(getId());
+    }
+
+    public void removeTeam(String teamId){
+        _teams.remove(teamId);
+        TeamService.getTeamById(teamId).removeActiveLeague(getId());
     }
 
     public void insertSeason(String seasonId) {
@@ -46,7 +58,7 @@ public class League {
 
     public void createNewSeason() {
 
-        Season season = new Season(UUID.randomUUID().toString(), "Season " + (_seasons.size() + 1), _id);
+        Season season = new Season(UUID.randomUUID().toString(), "Season " + (_seasons.size() + 1), _id, TimeService.now());
 
         SeasonService.insertSeason(season);
 

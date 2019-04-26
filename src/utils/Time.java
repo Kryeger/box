@@ -27,6 +27,10 @@ public class Time {
         addSeconds(second);
     }
 
+    public Time(Time time){
+        _time = time._time;
+    }
+
     public boolean equals(Time t){
         return (_time == t.getHours());
     }
@@ -104,8 +108,11 @@ public class Time {
     }
 
     public String getDate() {
-        return (String.valueOf(getDay()) + '/' + getMonth() + '/' + getYear() + ", " + getHour() + ":" + getMinute() + ":" + getSecond());
+        return (String.valueOf(getDay()) + " / " + getMonth() + " / " + getYear());
     }
 
+    public String getTime() {
+        return (String.valueOf(getHour() + ":" + getMinute() + ":" + getSecond()));
+    }
 
 }

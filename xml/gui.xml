@@ -147,38 +147,90 @@
         </panel>
     </window>
 
-    <window id="main-window" title="" centered="">
-        <panel id="main-window-main-panel" columns="2" hSpan="10" vSpan="10">
-            <panel id="main-window-left-panel">
-                <panel id="main-window-team-info-panel" columns="2">
-                    <panel id="main-window-team-name-panel">
-                        <label id="main-window-team-name">Full Team Name</label>
+    <window id="main-window" title="" centered="" expanded="">
+        <panel id="main-window-main-panel" columns="3" hSpread="">
+            <panel id="main-window-left-panel" hSpread="" vSpacing="1" columns="2" tMargin="1">
+
+                <panel id="main-window-actions-panel" columns="3" hSpacing="1">
+                    <panel id="main-window-actions-col1-panel" vSpacing="1">
+                        <button id="main-window-next-button" hAlign="center"> Next </button>
+                        <button id="main-window-team-button" hAlign="center"> Team </button>
                     </panel>
-                    <panel id="main-window-money-panel">
-                        <label id="main-window-money" fgColor="#85BB65">$54,382.298</label>
+                    <panel id="main-window-actions-col2-panel" vSpacing="1">
+                        <button id="main-window-training-button" hAlign="center"> Training </button>
+                        <button id="main-window-equipment-button" hAlign="center"> Equipment </button>
+                    </panel>
+                    <panel id="main-window-actions-col3-panel" vSpacing="1">
+                        <button id="main-window-lineup-button" hAlign="center"> Finances </button>
+                        <button id="main-window-stats-button" hAlign="center"> Stats </button>
                     </panel>
                 </panel>
+
             </panel>
-            <panel id="main-window-right-panel">
+
+            <panel id="main-window-info-panel" columns="2">
+                <panel id="main-window-info-money-panel" hAlign="end">
+                    <label fgColor="#646464" hAlign="center">Money</label>
+                    <label id="main-window-money" fgColor="#85BB65">$54,382.29</label>
+                </panel>
+            </panel>
+
+            <panel id="main-window-right-panel"  vSpread="" vSpacing="1">
+
                 <panel id="main-window-time-panel" hAlign="center">
+                    <label fgColor="#646464" hAlign="center">Time &amp; Date</label>
                     <label id="main-window-date" hAlign="center">1 / 1 / 1</label>
                     <label id="main-window-time" hAlign="center">13:37</label>
                 </panel>
-                <panel id="main-window-coming-up-panel" tMargin="1">
+
+                <panel id="main-window-coming-up-panel">
                     <label hAlign="center" fgColor="#646464">Coming up</label>
                     <panel id="main-window-coming-up-items-panel">
-                        <panel id="main-window-coming-up-item" columns="2">
-                            <label>NiP vs NaVi | 14:00</label>
+                        <panel id="main-window-coming-up-item-panel">
+                            <label>L2 | SomeOtherTeam | 18:40</label>
                         </panel>
-                        <panel id="main-window-coming-up-item" columns="2">
-                            <label>NiP vs NaVi | 14:00</label>
-                        </panel>
-                        <panel id="main-window-coming-up-item" columns="2">
-                            <label>NiP vs NaVi | 14:00</label>
+                        <panel id="main-window-coming-up-item-panel">
+                            <label>L2 | WhoKnowsWho | 21:40</label>
                         </panel>
                     </panel>
                 </panel>
+
+                <panel id="main-window-league-matches-panel">
+                    <label fgColor="#646464" hAlign="center" >League Matches</label>
+                    <panel id="main-window-league-matches-items-panel">
+                        <panel id="main-window-league-matches-item" columns="2">
+                            <label>L1 | NiP vs NaVi | 14:00</label>
+                        </panel>
+                        <panel id="main-window-coming-up-item" columns="2">
+                            <label>L3 | AsT vs QXc | 15:30</label>
+                        </panel>
+                        <panel id="main-window-coming-up-item" columns="2">
+                            <label>L2 | F-O vs L66 | 17:15</label>
+                        </panel>
+                    </panel>
+                </panel>
+
+                <panel id="main-window-latest-results-panel" hAlign="center">
+                    <label fgColor="#646464" hAlign="center">Latest results</label>
+                    <panel id="main-window-latest-results-items">
+                        <panel id="main-window-latest-result-item">
+                            <label>L1 | FaZe 1 : 0 C9</label>
+                        </panel>
+                        <panel id="main-window-latest-result-item">
+                            <label>L1 | FN 1 : 0 B-Tr</label>
+                        </panel>
+                        <panel id="main-window-latest-result-item">
+                            <label>L1 | MiBR 1 : 0 SK</label>
+                        </panel>
+                    </panel>
+                </panel>
+
+                <panel id="main-window-help" vAlign="end" hAlign="center" tMargin="1">
+                    <label fgColor="#646464">Controls &amp; Help</label>
+                </panel>
+
             </panel>
+
         </panel>
     </window>
 

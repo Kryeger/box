@@ -32,7 +32,7 @@ public class World {
 
         for (int i = 0; i < 3; i++) {
 
-            League newLeague = new League(UUID.randomUUID().toString(), "League" + (i + 1));
+            League newLeague = new League("league" + i, "League" + (i + 1));
 
             for (int j = 0; j < 30; j++) {
 
@@ -58,10 +58,6 @@ public class World {
             LeagueService.insertLeague(newLeague);
 
         }
-
-        LeagueService.getAll().forEach((id, league) -> {
-            league.createNewSeason();
-        });
 
         for (int i = 1; i < 5; i += 1) {
             for (int j = 0; j < 3; j++) {

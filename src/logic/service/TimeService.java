@@ -18,8 +18,16 @@ public class TimeService {
         return _instance._time.getDate();
     }
 
+    public static String getTime() {
+        return _instance._time.getTime();
+    }
+
     public static void addHours(long hours) {
         _instance._time.addHours(hours);
+    }
+
+    public static Time now() {
+        return new Time(_instance._time);
     }
 
 }

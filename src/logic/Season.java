@@ -1,9 +1,11 @@
 package logic;
 
 import logic.service.MatchService;
+import logic.service.TimeService;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import utils.Time;
 
 import java.util.*;
 
@@ -15,10 +17,13 @@ public class Season {
     private ArrayList<String> _teams = new ArrayList<>();
     private String _leagueId;
 
-    public Season(String id, String name, String leagueId) {
+    private Time _startTime;
+
+    public Season(String id, String name, String leagueId, Time startTime) {
         _id = id;
         _name = name;
         _leagueId = leagueId;
+        _startTime = startTime;
     }
 
     public String getLeagueId() {
@@ -60,6 +65,8 @@ public class Season {
             }
         }
 
+        Time scheduleTime = new Time(_startTime);
+
         Collections.shuffle(pairs);
 
         pairs.forEach((el) -> {
@@ -67,9 +74,11 @@ public class Season {
                     new Schedule(
                             UUID.randomUUID().toString(),
                             _teams.get(el.getLeft()),
-                            _teams.get(el.getRight())
+                            _teams.get(el.getRight()),
+                            scheduleTime
                     )
             );
+            scheduleTime.addHours(1);
         });
 
     }

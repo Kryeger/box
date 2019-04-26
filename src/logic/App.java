@@ -17,9 +17,7 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import gen.MalePlayerGenerator;
 import gui.Gui;
 import gui.KeyStrokeListener;
-import logic.service.ManagerService;
-import logic.service.PlayerService;
-import logic.service.TeamService;
+import logic.service.*;
 import utils.Money;
 
 import java.awt.*;
@@ -28,6 +26,8 @@ import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class App {
@@ -50,7 +50,7 @@ public class App {
 
         terminalFactory.setTerminalEmulatorFontConfiguration(plexMonoSemiBold);
 
-        terminalFactory.setTerminalEmulatorTitle("CS:GO Manager 0.0.1");
+        terminalFactory.setTerminalEmulatorTitle("CS:GO Manager");
 
         terminalFactory.setInitialTerminalSize(new TerminalSize(130, 40));
 
@@ -270,6 +270,11 @@ public class App {
 
                         _playerTeam.getMoney().minus(owedMoney);
 
+                        LeagueService.getLeagueById("league2").removeTeam(LeagueService.getLeagueById("league2").getTeams().get(0));
+                        LeagueService.getLeagueById("league2").insertTeam(_playerTeam);
+
+                        LeagueService.getAll().forEach((id, league) -> league.createNewSeason());
+
                         drawView("main-window");
                     }
                 });
@@ -277,8 +282,19 @@ public class App {
             } break;
 
             case "main-window": {
+
                 _gui.showWindow("main-window");
+
                 ((AbstractWindow)_gui.getWindow("main-window")).setTitle(_playerTeam.getName());
+                _gui.getLabel("main-window-money").setText(_playerTeam.getMoney().toString());
+
+                _gui.getLabel("main-window-date").setText(TimeService.getDate());
+                _gui.getLabel("main-window-time").setText(TimeService.getTime());
+
+                _gui.getButton("main-window-next-button").addListener((button -> {
+                    _gui.getLabel("main-window-date").setText(TimeService.getDate());
+                    _gui.getLabel("main-window-time").setText(TimeService.getTime());
+                }));
 
             } break;
 
