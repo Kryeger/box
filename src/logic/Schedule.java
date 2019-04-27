@@ -2,7 +2,7 @@ package logic;
 
 import utils.Time;
 
-public class Schedule {
+public class Schedule implements Comparable<Schedule> {
 
     private String _id;
     private String _homeTeamId;
@@ -46,6 +46,11 @@ public class Schedule {
 
     public void setAwayTeam(String awayTeamId) {
         _awayTeamId = awayTeamId;
+    }
+
+    @Override
+    public int compareTo(Schedule schedule) {
+        return (_time.compareTo(schedule._time));
     }
 
 }

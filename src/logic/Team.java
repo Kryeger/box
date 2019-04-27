@@ -26,11 +26,15 @@ public class Team {
         _money = new Money(money);
     }
 
-    public void insertActiveLeague(String leagueId){
+    public ArrayList<String> getActiveLeagues() {
+        return _activeLeagues;
+    }
+
+    public void insertActiveLeague(String leagueId) {
         _activeLeagues.add(leagueId);
     }
 
-    public void removeActiveLeague(String leagueId){
+    public void removeActiveLeague(String leagueId) {
         _activeLeagues.remove(leagueId);
     }
 

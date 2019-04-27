@@ -3,6 +3,7 @@ package logic;
 import logic.ingame.IGTeam;
 import logic.service.TeamService;
 import org.apache.commons.collections4.map.LinkedMap;
+import utils.Time;
 
 import java.util.UUID;
 
@@ -17,15 +18,27 @@ public class Match {
     private int _awayTeamMoney = 800;
     private boolean _isFinished = false;
     private String _winner;
-
     private Map _map;
-
     private LinkedMap<String, Round> _rounds = new LinkedMap<>();
+    private Time _time;
 
-    public Match(String id, String homeTeamId, String awayTeamId) {
+    public Match(String id, String homeTeamId, String awayTeamId, Time time) {
         _id = id;
         _homeTeam = new IGTeam(homeTeamId);
         _awayTeam = new IGTeam(awayTeamId);
+        _time = time;
+    }
+
+    public Time getTime() {
+        return _time;
+    }
+
+    public IGTeam getHomeTeam() {
+        return _homeTeam;
+    }
+
+    public IGTeam getAwayTeam() {
+        return _awayTeam;
     }
 
     public void simulateNextRound() {
@@ -79,6 +92,26 @@ public class Match {
             _winner = "draw";
             _isFinished = true;
         }
+    }
+
+    public int getHomeTeamScore() {
+        return _homeTeamScore;
+    }
+
+    public int getAwayTeamScore() {
+        return _awayTeamScore;
+    }
+
+    public String getWinner() {
+        return _winner;
+    }
+
+    public Map getMap() {
+        return _map;
+    }
+
+    public LinkedMap<String, Round> getRounds() {
+        return _rounds;
     }
 
     public boolean isFinished() {

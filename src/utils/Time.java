@@ -1,6 +1,6 @@
 package utils;
 
-public class Time {
+public class Time implements Comparable<Time> {
 
     private long _time;
 
@@ -112,7 +112,22 @@ public class Time {
     }
 
     public String getTime() {
+        return (String.valueOf(getHour() + ":" + getMinute()));
+    }
+
+    public String getFullTime() {
         return (String.valueOf(getHour() + ":" + getMinute() + ":" + getSecond()));
     }
 
+    @Override
+    public String toString() {
+        return "Time{" + getDate() + " " + getFullTime() + "}\n";
+    }
+
+    @Override
+    public int compareTo(Time time) {
+        if(_time > time._time) return 1;
+        if(_time == time._time) return 0;
+        return -1;
+    }
 }

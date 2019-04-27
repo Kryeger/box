@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 
 public class App {
 
@@ -288,13 +286,71 @@ public class App {
                 ((AbstractWindow)_gui.getWindow("main-window")).setTitle(_playerTeam.getName());
                 _gui.getLabel("main-window-money").setText(_playerTeam.getMoney().toString());
 
-                _gui.getLabel("main-window-date").setText(TimeService.getDate());
-                _gui.getLabel("main-window-time").setText(TimeService.getTime());
-
-                _gui.getButton("main-window-next-button").addListener((button -> {
+                Runnable refreshTime = () -> {
                     _gui.getLabel("main-window-date").setText(TimeService.getDate());
                     _gui.getLabel("main-window-time").setText(TimeService.getTime());
-                }));
+                };
+                Runnable refreshLeagueMatches = () -> {
+                    //refresh league matches panel
+                    _gui.getPanel("main-window-league-matches-items-panel").removeAllComponents();
+                    ArrayList<Schedule> leagueMatches = new ArrayList<>();
+
+                    _playerTeam.getActiveLeagues().forEach(leagueId -> {
+                        leagueMatches.addAll(LeagueService.getLeagueById(leagueId).getNextSchedules());
+                    });
+
+                    leagueMatches.sort(Comparator.naturalOrder());
+
+                    leagueMatches.forEach(schedule -> {
+                        Label label = new Label(
+                                TeamService.getTeamById( schedule.getHomeTeam()).getAcronym() +
+                                        " vs " +
+                                        TeamService.getTeamById(schedule.getAwayTeam()).getAcronym() + " | " +
+                                        schedule.getTime().getTime()
+                        );
+
+                        _gui.getPanel("main-window-league-matches-items-panel").addComponent(label);
+                    });
+
+                };
+                Runnable refreshLatestResults = () -> {
+                    _gui.getPanel("main-window-latest-results-items").removeAllComponents();
+                    ArrayList<Match> latestResults = new ArrayList<>();
+
+                    _playerTeam.getActiveLeagues().forEach(leagueId -> {
+                        latestResults.addAll(LeagueService.getLeagueById(leagueId).getLatestPlayedMatches());
+                    });
+
+                    latestResults.sort(Comparator.comparing(Match::getTime).reversed());
+
+                    latestResults.forEach(match -> {
+                        Label label = new Label(
+                                match.getHomeTeam().getAcronym() + " " +
+                                    match.getHomeTeamScore()+ " : " +
+                                    match.getAwayTeamScore() + " " +
+                                    match.getAwayTeam().getAcronym()
+                        );
+                        _gui.getPanel("main-window-latest-results-items").addComponent(label);
+                    });
+                };
+
+                refreshTime.run();
+                refreshLeagueMatches.run();
+
+                _gui.getButton("main-window-next-button").addListener(button -> {
+
+                    TimeService.addHours(1);
+                    refreshTime.run();
+
+                    _playerTeam.getActiveLeagues().forEach((league) -> {
+                        if(LeagueService.getLeagueById(league).getNextSchedule().getTime().compareTo(TimeService.now()) <= 0){
+                            Match nextMatch = LeagueService.getLeagueById(league).simulateNextMatch();
+                        }
+                    });
+
+                    refreshLeagueMatches.run();
+                    refreshLatestResults.run();
+                });
 
             } break;
 

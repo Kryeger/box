@@ -1,6 +1,7 @@
 package logic.service;
 
 import logic.Match;
+import utils.Time;
 
 import java.util.HashMap;
 
@@ -16,8 +17,8 @@ public class MatchService {
         return _instance;
     }
 
-    public void createMatch(String id, String homeTeamId, String awayTeamId) {
-        _instance._matches.put(id, new Match(id, homeTeamId, awayTeamId));
+    public void createMatch(String id, String homeTeamId, String awayTeamId, Time time) {
+        _instance._matches.put(id, new Match(id, homeTeamId, awayTeamId, time));
     }
 
     public static void insertMatch(Match match){

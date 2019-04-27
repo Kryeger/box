@@ -183,7 +183,7 @@
                     <label id="main-window-time" hAlign="center">13:37</label>
                 </panel>
 
-                <panel id="main-window-coming-up-panel">
+                <panel id="main-window-coming-up-panel" hAlign="center">
                     <label hAlign="center" fgColor="#646464">Coming up</label>
                     <panel id="main-window-coming-up-items-panel">
                         <panel id="main-window-coming-up-item-panel">
@@ -195,18 +195,10 @@
                     </panel>
                 </panel>
 
-                <panel id="main-window-league-matches-panel">
-                    <label fgColor="#646464" hAlign="center" >League Matches</label>
+                <panel id="main-window-league-matches-panel" hAlign="center">
+                    <label fgColor="#646464" hAlign="center">League Matches</label>
                     <panel id="main-window-league-matches-items-panel">
-                        <panel id="main-window-league-matches-item" columns="2">
-                            <label>L1 | NiP vs NaVi | 14:00</label>
-                        </panel>
-                        <panel id="main-window-coming-up-item" columns="2">
-                            <label>L3 | AsT vs QXc | 15:30</label>
-                        </panel>
-                        <panel id="main-window-coming-up-item" columns="2">
-                            <label>L2 | F-O vs L66 | 17:15</label>
-                        </panel>
+
                     </panel>
                 </panel>
 

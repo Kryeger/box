@@ -15,8 +15,8 @@ public class Season {
     private String _name;
     private LinkedMap<String, Schedule> _schedules = new LinkedMap<>();
     private ArrayList<String> _teams = new ArrayList<>();
+    private ArrayList<String> _matches = new ArrayList<>();
     private String _leagueId;
-
     private Time _startTime;
 
     public Season(String id, String name, String leagueId, Time startTime) {
@@ -24,6 +24,10 @@ public class Season {
         _name = name;
         _leagueId = leagueId;
         _startTime = startTime;
+    }
+
+    public LinkedMap<String, Schedule> getSchedules() {
+        return _schedules;
     }
 
     public String getLeagueId() {
@@ -75,7 +79,7 @@ public class Season {
                             UUID.randomUUID().toString(),
                             _teams.get(el.getLeft()),
                             _teams.get(el.getRight()),
-                            scheduleTime
+                            new Time(scheduleTime)
                     )
             );
             scheduleTime.addHours(1);
@@ -87,13 +91,18 @@ public class Season {
         _schedules.put(schedule.getId(), schedule);
     }
 
-    public void simulateNextMatch() {
-        Schedule nextSchedule = _schedules.get(_schedules.lastKey());
-        _schedules.remove(_schedules.indexOf(_schedules.lastKey()));
+    public ArrayList<String> getMatches() {
+        return _matches;
+    }
 
-        Match nextMatch = new Match(UUID.randomUUID().toString(), nextSchedule.getHomeTeam(), nextSchedule.getAwayTeam());
+    public Match simulateNextMatch() {
+        Schedule nextSchedule = _schedules.get(_schedules.firstKey());
+        _schedules.remove(_schedules.indexOf(_schedules.firstKey()));
+
+        Match nextMatch = new Match(UUID.randomUUID().toString(), nextSchedule.getHomeTeam(), nextSchedule.getAwayTeam(), nextSchedule.getTime());
 
         MatchService.insertMatch(nextMatch);
+        _matches.add(nextMatch.getId());
 
         System.out.println("Simulating " + nextSchedule.getHomeTeam().toString() + "(H)");
         System.out.println("Simulating " + nextSchedule.getAwayTeam().toString() + "(A)");
@@ -102,5 +111,6 @@ public class Season {
             nextMatch.simulateNextRound();
         }
 
+        return nextMatch;
     }
 }
