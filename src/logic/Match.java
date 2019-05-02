@@ -43,8 +43,8 @@ public class Match {
 
     public void simulateNextRound() {
 
-        System.out.println(_homeTeam.getAcronym() + " " + _homeTeamScore + " : " + _awayTeamScore + " " + _awayTeam.getAcronym());
-        System.out.println("Simulating round #" + getRoundNumber());
+//        System.out.println(_homeTeam.getAcronym() + " " + _homeTeamScore + " : " + _awayTeamScore + " " + _awayTeam.getAcronym());
+//        System.out.println("Simulating round #" + getRoundNumber());
 
         Round newRound = new Round(
                 UUID.randomUUID().toString(),
@@ -52,6 +52,8 @@ public class Match {
                 _awayTeam,
                 _homeTeamMoney,
                 _awayTeamMoney,
+                _homeTeamScore,
+                _awayTeamScore,
                 getRoundNumber()
         );
 

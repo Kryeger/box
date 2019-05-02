@@ -7,6 +7,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Button;
 import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.Label;
+import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -15,8 +16,10 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.googlecode.lanterna.gui2.GridLayout;
 import gen.MalePlayerGenerator;
+import gui.AdvanceNextRound;
 import gui.Gui;
 import gui.KeyStrokeListener;
+import logic.ingame.Kill;
 import logic.service.*;
 import utils.Money;
 
@@ -32,6 +35,7 @@ public class App {
 
     private Gui _gui;
     private World _world;
+    private Random _randomGenerator = new Random();
 
     private Manager _player;
     private Team _playerTeam;
@@ -343,13 +347,75 @@ public class App {
                     refreshTime.run();
 
                     _playerTeam.getActiveLeagues().forEach((league) -> {
+
                         if(LeagueService.getLeagueById(league).getNextSchedule().getTime().compareTo(TimeService.now()) <= 0){
-                            Match nextMatch = LeagueService.getLeagueById(league).simulateNextMatch();
+
+                            MatchReplay nextMatch = new MatchReplay(LeagueService.getLeagueById(league).simulateNextMatch());
+
+                            System.out.println(nextMatch.getCurrentRound());
+
+                            _gui.loadWindow("match-overview-window");
+
+                            _gui.getLabel("match-overview-score-hometeam-name").setText(nextMatch.getHomeTeam().getName());
+                            _gui.getLabel("match-overview-score-awayteam-name").setText(nextMatch.getAwayTeam().getName());
+                            _gui.getLabel("match-overview-score-hometeam-score").setText(String.valueOf(nextMatch.getCurrentHomeTeamScore()));
+                            _gui.getLabel("match-overview-score-awayteam-score").setText(String.valueOf(nextMatch.getCurrentAwayTeamScore()));
+
+                            Button matchOverviewNextButton = new Button("Next");
+
+                            matchOverviewNextButton.addListener(button1 -> {
+
+                                if(nextMatch.isFinished()){
+
+                                    _gui.unloadWindow("match-overview-window");
+                                    _gui.getPanel("match-overview-control-panel").removeAllComponents();
+                                    _gui.getPanel("match-overview-killfeed-panel").removeAllComponents();
+                                    _gui.getPanel("match-overview-scoreboard-panel").removeAllComponents();
+
+                                    refreshLeagueMatches.run();
+                                    refreshLatestResults.run();
+
+                                } else {
+
+                                    _gui.getLabel("match-overview-score-hometeam-score").setText(String.valueOf(nextMatch.getCurrentHomeTeamScore()));
+                                    _gui.getLabel("match-overview-score-awayteam-score").setText(String.valueOf(nextMatch.getCurrentAwayTeamScore()));
+
+                                    _gui.getPanel("match-overview-killfeed-panel").removeAllComponents();
+
+                                    nextMatch.getKills().forEach(kill -> {
+                                        _gui.getPanel("match-overview-killfeed-panel").addComponent(
+                                                new Label (PlayerService.getPlayerById(kill.getKillerId()).getNickName() +
+                                                        " killed " +
+                                                        PlayerService.getPlayerById(kill.getKilledId()).getNickName()
+                                                )
+                                        );
+                                    });
+
+                                    Panel scoreboardPanel = _gui.getPanel("match-overview-scoreboard-panel");
+                                    scoreboardPanel.removeAllComponents();
+
+                                    scoreboardPanel.addComponent(new Label("Name"));
+                                    scoreboardPanel.addComponent(new Label("Kills"));
+                                    scoreboardPanel.addComponent(new Label("Deaths"));
+
+                                    nextMatch.getScoreboard().getEntries().forEach((entry) -> {
+                                        scoreboardPanel.addComponent(new Label(PlayerService.getPlayerById(entry.getPlayerId()). getNickName()));
+                                        scoreboardPanel.addComponent(new Label(String.valueOf(entry.getKills())));
+                                        scoreboardPanel.addComponent(new Label(String.valueOf(entry.getDeaths())));
+                                    });
+
+                                    nextMatch.advanceToNextRound();
+
+                                }
+
+                            });
+
+                            _gui.getPanel("match-overview-control-panel").addComponent(matchOverviewNextButton);
+                            _gui.getWindow("match-overview-window").setFocusedInteractable(matchOverviewNextButton);
+
                         }
                     });
 
-                    refreshLeagueMatches.run();
-                    refreshLatestResults.run();
                 });
 
             } break;
@@ -358,3 +424,4 @@ public class App {
         }
     }
 }
+

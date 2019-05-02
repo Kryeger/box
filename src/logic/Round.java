@@ -2,6 +2,7 @@ package logic;
 
 import logic.ingame.IGPlayer;
 import logic.ingame.IGTeam;
+import logic.ingame.Kill;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
@@ -16,15 +17,33 @@ public class Round {
     private IGTeam _awayTeam;
     private int _homeTeamMoney;
     private int _awayTeamMoney;
+    private int _currentHomeTeamScore;
+    private int _currentAwayTeamScore;
     private int _roundNumber;
+    private ArrayList<Kill> _killfeed = new ArrayList<>();
+    private String _winner;
 
-    public Round(String id, IGTeam homeTeam, IGTeam awayTeam, int homeTeamMoney, int awayTeamMoney, int roundNumber) {
+    public Round(String id, IGTeam homeTeam, IGTeam awayTeam, int homeTeamMoney, int awayTeamMoney, int currentHomeTeamScore, int currentAwayTeamScore, int roundNumber) {
         _id = id;
         _homeTeam = homeTeam;
         _awayTeam = awayTeam;
         _homeTeamMoney = homeTeamMoney;
         _awayTeamMoney = awayTeamMoney;
+        _currentHomeTeamScore = currentHomeTeamScore;
+        _currentAwayTeamScore = currentAwayTeamScore;
         _roundNumber = roundNumber;
+    }
+
+    public int getCurrentHomeTeamScore() {
+        return _currentHomeTeamScore;
+    }
+
+    public int getCurrentAwayTeamScore() {
+        return _currentAwayTeamScore;
+    }
+
+    public ArrayList<Kill> getKillfeed() {
+        return _killfeed;
     }
 
     public String simulate() {
@@ -41,7 +60,7 @@ public class Round {
             awayTeamPlayers.add(player);
         });
 
-        while(homeTeamPlayers.size() > 0 && awayTeamPlayers.size() > 0){
+        while (homeTeamPlayers.size() > 0 && awayTeamPlayers.size() > 0) {
             Random randomGenerator = new Random();
 
             int randomHomePlayer = randomGenerator.nextInt(homeTeamPlayers.size());
@@ -58,14 +77,16 @@ public class Round {
                     awayTeamPlayers.get(randomAwayPlayer).getSkillRating() * awayTeamPlayers.get(randomAwayPlayer).getHealth()
             ));
 
-            switch(new EnumeratedDistribution<>(weightedList).sample()){
+            switch (new EnumeratedDistribution<>(weightedList).sample()) {
                 case "home":
                     homeTeamPlayers.get(randomHomePlayer).addHealth(-60);
                     awayTeamPlayers.get(randomAwayPlayer).addHealth(-100);
 
-                    System.out.println(
-                            homeTeamPlayers.get(randomHomePlayer).getNickName() + " killed " +  awayTeamPlayers.get(randomAwayPlayer).getNickName()
-                    );
+                    _killfeed.add(new Kill(homeTeamPlayers.get(randomHomePlayer).getId(), awayTeamPlayers.get(randomAwayPlayer).getId()));
+
+//                    System.out.println(
+//                            homeTeamPlayers.get(randomHomePlayer).getNickName() + " killed " + awayTeamPlayers.get(randomAwayPlayer).getNickName()
+//                    );
 
                     awayTeamPlayers.remove(randomAwayPlayer);
                     break;
@@ -74,9 +95,11 @@ public class Round {
                     awayTeamPlayers.get(randomAwayPlayer).addHealth(-60);
                     homeTeamPlayers.get(randomHomePlayer).addHealth(-100);
 
-                    System.out.println(
-                            awayTeamPlayers.get(randomAwayPlayer).getNickName() + " killed " +  homeTeamPlayers.get(randomHomePlayer).getNickName()
-                    );
+                    _killfeed.add(new Kill(awayTeamPlayers.get(randomAwayPlayer).getId(), homeTeamPlayers.get(randomHomePlayer).getId()));
+
+//                    System.out.println(
+//                            awayTeamPlayers.get(randomAwayPlayer).getNickName() + " killed " + homeTeamPlayers.get(randomHomePlayer).getNickName()
+//                    );
 
                     homeTeamPlayers.remove(randomHomePlayer);
                     break;
@@ -85,16 +108,22 @@ public class Round {
 
         }
 
-        if(homeTeamPlayers.size() == 0){
+        if (homeTeamPlayers.size() == 0) {
 
-            return "away";
+            _winner = "away";
+            return _winner;
 
         } else {
 
-            return "home";
+            _winner = "home";
+            return _winner;
 
         }
 
+    }
+
+    public String getWinner() {
+        return _winner;
     }
 
     public String getId() {

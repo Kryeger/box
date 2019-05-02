@@ -226,4 +226,37 @@
         </panel>
     </window>
 
+    <window id="match-overview-window" title="" centered="" expanded="">
+        <panel id="match-overview-main-panel" >
+            <panel id="match-overview-score-panel" columns="5" hAlign="center" hSpread="">
+                <label id="match-overview-score-hometeam-name"></label>
+                <label id="match-overview-score-hometeam-score"></label>
+                <label>:</label>
+                <label id="match-overview-score-awayteam-score"></label>
+                <label id="match-overview-score-awayteam-name"></label>
+            </panel>
+
+            <panel id="match-overview-bottom-panel" tMargin="1" hAlign="center" columns="2">
+
+                <panel id="match-overview-left-panel" hAlign="begin" hSpread="">
+                    <label fgColor="#646464">Killfeed</label>
+                    <panel id="match-overview-killfeed-panel" tMargin="1"></panel>
+
+                    <panel id="match-overview-control-panel">
+                    </panel>
+
+                </panel>
+
+                <panel id="match-overview-right-panel" hAlign="end" hSpread="">
+                    <panel id="match-overview-scoreboard-wrap-panel">
+                        <label fgColor="#646464">Scoreboard</label>
+                        <panel id="match-overview-scoreboard-panel" tMargin="1" columns="3"></panel>
+                    </panel>
+                </panel>
+
+            </panel>
+
+        </panel>
+    </window>
+
 </root>

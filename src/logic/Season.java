@@ -104,9 +104,6 @@ public class Season {
         MatchService.insertMatch(nextMatch);
         _matches.add(nextMatch.getId());
 
-        System.out.println("Simulating " + nextSchedule.getHomeTeam().toString() + "(H)");
-        System.out.println("Simulating " + nextSchedule.getAwayTeam().toString() + "(A)");
-
         while (!nextMatch.isFinished()) {
             nextMatch.simulateNextRound();
         }
