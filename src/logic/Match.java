@@ -5,9 +5,10 @@ import logic.service.TeamService;
 import org.apache.commons.collections4.map.LinkedMap;
 import utils.Time;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Match {
+public class Match implements Serializable {
 
     private String _id;
     private IGTeam _homeTeam;

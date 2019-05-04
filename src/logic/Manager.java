@@ -1,6 +1,8 @@
 package logic;
 
-public class Manager {
+import java.io.Serializable;
+
+public class Manager implements Serializable {
 
     private String _id;
     private String _firstName;

@@ -3,10 +3,11 @@ package logic;
 import logic.service.PlayerService;
 import utils.Money;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Team {
+public class Team implements Serializable {
 
     private String _id;
     private String _name;

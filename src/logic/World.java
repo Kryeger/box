@@ -12,11 +12,12 @@ import utils.Time;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class World {
+public class World implements Serializable {
 
     String pathToLeagues;
     String pathToPlayers = "./data/players/players.csv";

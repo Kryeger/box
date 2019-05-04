@@ -17,6 +17,10 @@ public class SeasonService {
         return _instance;
     }
 
+    public static HashMap<String, Season> getAll() {
+        return _instance._seasons;
+    }
+
     public void createSeason(String id, String name, String leagueId, Time startTime) {
         _instance._seasons.put(id, new Season(id, name, leagueId, startTime));
     }

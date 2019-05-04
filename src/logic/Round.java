@@ -6,11 +6,12 @@ import logic.ingame.Kill;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Round {
+public class Round implements Serializable {
 
     private String _id;
     private IGTeam _homeTeam;

@@ -8,7 +8,8 @@ public class TimeService {
 
     private Time _time = new Time();
 
-    private TimeService() {}
+    private TimeService() {
+    }
 
     public static long getSeconds() {
         return _instance._time.getSeconds();
@@ -28,6 +29,10 @@ public class TimeService {
 
     public static Time now() {
         return new Time(_instance._time);
+    }
+
+    public static void setSeconds(long seconds) {
+        _instance._time.setSeconds(seconds);
     }
 
 }

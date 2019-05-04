@@ -15,20 +15,32 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.googlecode.lanterna.gui2.GridLayout;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import gen.MalePlayerGenerator;
 import gui.AdvanceNextRound;
 import gui.Gui;
 import gui.KeyStrokeListener;
 import logic.ingame.Kill;
 import logic.service.*;
+import org.w3c.dom.Text;
 import utils.Money;
+import utils.SaveInfo;
 
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 public class App {
@@ -36,11 +48,16 @@ public class App {
     private Gui _gui;
     private World _world;
     private Random _randomGenerator = new Random();
+    private String _id;
+
+    private String _pathToSavesFolder = "./save";
 
     private Manager _player;
     private Team _playerTeam;
 
     public App() {
+
+        _id = UUID.randomUUID().toString();
 
         _world = new World();
 
@@ -59,7 +76,7 @@ public class App {
         Screen screen = null;
 
         try {
-            SwingTerminalFrame terminal = (SwingTerminalFrame)terminalFactory.createTerminal();
+            SwingTerminalFrame terminal = (SwingTerminalFrame) terminalFactory.createTerminal();
 
             screen = new TerminalScreen(terminal);
             screen.doResizeIfNecessary();
@@ -77,22 +94,9 @@ public class App {
 
         _gui.getThread().start();
 
-        //gui control
         _gui.getThread().invokeLater(() -> {
 
             drawView("welcome");
-            /*
-            _world.getPlayers().forEach((id, player) -> {
-                _gui.getPanel("player-firstName").addComponent(new com.googlecode.lanterna.gui2.Label(player.getFirstName()));
-                _gui.getPanel("player-nickName").addComponent(new com.googlecode.lanterna.gui2.Label(player.getNickName()));
-                _gui.getPanel("player-lastName").addComponent(new com.googlecode.lanterna.gui2.Label(player.getLastName()));
-                _gui.getPanel("player-skillRating").addComponent(new com.googlecode.lanterna.gui2.Label(String.valueOf(formatter.format(player.getSkillRating()))));
-            });
-
-            _world.getTeams().forEach((id, team) -> {
-                _gui.getPanel("team-name").addComponent(new com.googlecode.lanterna.gui2.Label(team.getName()));
-                _gui.getPanel("team-acronym").addComponent(new Label(team.getAcronym()));
-            });*/
 
         });
 
@@ -105,8 +109,12 @@ public class App {
         }
     }
 
-    private void drawView(String viewId){
-        switch(viewId){
+    public String getId() {
+        return _id;
+    }
+
+    private void drawView(String viewId) {
+        switch (viewId) {
             case "welcome": {
 
                 _gui.showWindow("welcome-window");
@@ -115,7 +123,21 @@ public class App {
                     drawView("newGame");
                 });
 
-            } break;
+                ArrayList<SaveInfo> savedGames = getSavedGames();
+
+                if(savedGames.size() > 0){
+                    _gui.getLabel("found-save-text").setText(savedGames.get(0).getPlayerName());
+                    Color color = Color.decode("#BEBBBB");
+                    _gui.getLabel("found-save-text").setForegroundColor(TextColor.Indexed.fromRGB(color.getRed(), color.getGreen(), color.getBlue()));
+
+                    _gui.getButton("continue-game-button").addListener(button -> {
+                        loadGame(savedGames.get(0).getAppId());
+                        drawView("main-window");
+                    });
+                }
+
+            }
+            break;
 
             case "newGame": {
 
@@ -150,7 +172,7 @@ public class App {
                     ManagerService.insertManager(_player);
 
                     //spawn recruitment window
-                    ((AbstractWindow)_gui.getWindow("create-first-team-window")).setTitle(teamName + " | Recruit Players");
+                    ((AbstractWindow) _gui.getWindow("create-first-team-window")).setTitle(teamName + " | Recruit Players");
 
                     drawView("createFirstTeam");
                     //_gui.getLabels().get("create-first-team-top-money-label").setText(_player.getMoney());
@@ -158,7 +180,7 @@ public class App {
                 });
 
                 _gui.getRadioBoxLists().get("new-game-starting-money-radio").addListener((current, last) -> {
-                    switch(current){
+                    switch (current) {
                         case 0:
                             _gui.getLabel("starting-money-label").setText("$30,000.000");
                             break;
@@ -171,7 +193,8 @@ public class App {
                     }
                 });
 
-            } break;
+            }
+            break;
 
             case "createFirstTeam": {
                 _gui.showWindow("create-first-team-window");
@@ -196,7 +219,7 @@ public class App {
 
                 _gui.getLabel("create-first-team-top-money-label").setText(_playerTeam.getMoney().toString());
 
-                ArrayList<String> freeAgents =  PlayerService.getFreeAgents();
+                ArrayList<String> freeAgents = PlayerService.getFreeAgents();
                 ArrayList<String> selectedPlayers = new ArrayList<>();
 
                 freeAgents.forEach((id) -> {
@@ -211,7 +234,7 @@ public class App {
                     Button detailsButton = new Button(" Details ", () -> {
 
                         _gui.loadWindow("player-details-window");
-                        ((AbstractWindow)_gui.getWindow("player-details-window")).setTitle(player.getFullName());
+                        ((AbstractWindow) _gui.getWindow("player-details-window")).setTitle(player.getFullName());
                         _gui.getLabel("player-details-firstName").setText(player.getFirstName());
                         _gui.getLabel("player-details-nickName").setText(player.getNickName());
                         _gui.getLabel("player-details-lastName").setText(player.getLastName());
@@ -229,9 +252,9 @@ public class App {
                     Button recruitButton = new Button("  Recruit  ");
 
                     recruitButton.addListener((button) -> {
-                        if(button.getLabel().equals("  Recruit  ")){
+                        if (button.getLabel().equals("  Recruit  ")) {
 
-                            if(selectedPlayers.size() < 5){
+                            if (selectedPlayers.size() < 5) {
                                 button.setLabel(" Recruited ");
                                 selectedPlayers.add(id);
                             }
@@ -264,7 +287,7 @@ public class App {
                     Money owedMoney = new Money("0");
                     Money playerMoney = new Money(_playerTeam.getMoney());
 
-                    if(selectedPlayers.size() == 5 && owedMoney.lessThan(playerMoney)){
+                    if (selectedPlayers.size() == 5 && owedMoney.lessThan(playerMoney)) {
 
                         selectedPlayers.forEach((selectedPlayerId) -> {
                             _playerTeam.insertPlayer(selectedPlayerId);
@@ -281,13 +304,14 @@ public class App {
                     }
                 });
 
-            } break;
+            }
+            break;
 
             case "main-window": {
 
                 _gui.showWindow("main-window");
 
-                ((AbstractWindow)_gui.getWindow("main-window")).setTitle(_playerTeam.getName());
+                ((AbstractWindow) _gui.getWindow("main-window")).setTitle(_playerTeam.getName());
                 _gui.getLabel("main-window-money").setText(_playerTeam.getMoney().toString());
 
                 Runnable refreshTime = () -> {
@@ -307,7 +331,7 @@ public class App {
 
                     leagueMatches.forEach(schedule -> {
                         Label label = new Label(
-                                TeamService.getTeamById( schedule.getHomeTeam()).getAcronym() +
+                                TeamService.getTeamById(schedule.getHomeTeam()).getAcronym() +
                                         " vs " +
                                         TeamService.getTeamById(schedule.getAwayTeam()).getAcronym() + " | " +
                                         schedule.getTime().getTime()
@@ -330,9 +354,9 @@ public class App {
                     latestResults.forEach(match -> {
                         Label label = new Label(
                                 match.getHomeTeam().getAcronym() + " " +
-                                    match.getHomeTeamScore()+ " : " +
-                                    match.getAwayTeamScore() + " " +
-                                    match.getAwayTeam().getAcronym()
+                                        match.getHomeTeamScore() + " : " +
+                                        match.getAwayTeamScore() + " " +
+                                        match.getAwayTeam().getAcronym()
                         );
                         _gui.getPanel("main-window-latest-results-items").addComponent(label);
                     });
@@ -340,6 +364,7 @@ public class App {
 
                 refreshTime.run();
                 refreshLeagueMatches.run();
+                refreshLatestResults.run();
 
                 _gui.getButton("main-window-next-button").addListener(button -> {
 
@@ -348,11 +373,9 @@ public class App {
 
                     _playerTeam.getActiveLeagues().forEach((league) -> {
 
-                        if(LeagueService.getLeagueById(league).getNextSchedule().getTime().compareTo(TimeService.now()) <= 0){
+                        if (LeagueService.getLeagueById(league).getNextSchedule().getTime().compareTo(TimeService.now()) <= 0) {
 
                             MatchReplay nextMatch = new MatchReplay(LeagueService.getLeagueById(league).simulateNextMatch());
-
-                            System.out.println(nextMatch.getCurrentRound());
 
                             _gui.loadWindow("match-overview-window");
 
@@ -365,7 +388,7 @@ public class App {
 
                             matchOverviewNextButton.addListener(button1 -> {
 
-                                if(nextMatch.isFinished()){
+                                if (nextMatch.isFinished()) {
 
                                     _gui.unloadWindow("match-overview-window");
                                     _gui.getPanel("match-overview-control-panel").removeAllComponents();
@@ -384,7 +407,7 @@ public class App {
 
                                     nextMatch.getKills().forEach(kill -> {
                                         _gui.getPanel("match-overview-killfeed-panel").addComponent(
-                                                new Label (PlayerService.getPlayerById(kill.getKillerId()).getNickName() +
+                                                new Label(PlayerService.getPlayerById(kill.getKillerId()).getNickName() +
                                                         " killed " +
                                                         PlayerService.getPlayerById(kill.getKilledId()).getNickName()
                                                 )
@@ -394,12 +417,14 @@ public class App {
                                     Panel scoreboardPanel = _gui.getPanel("match-overview-scoreboard-panel");
                                     scoreboardPanel.removeAllComponents();
 
+                                    scoreboardPanel.addComponent(new Label("Team"));
                                     scoreboardPanel.addComponent(new Label("Name"));
                                     scoreboardPanel.addComponent(new Label("Kills"));
                                     scoreboardPanel.addComponent(new Label("Deaths"));
 
                                     nextMatch.getScoreboard().getEntries().forEach((entry) -> {
-                                        scoreboardPanel.addComponent(new Label(PlayerService.getPlayerById(entry.getPlayerId()). getNickName()));
+                                        scoreboardPanel.addComponent(new Label("(" + TeamService.getTeamById(PlayerService.getPlayerById(entry.getPlayerId()).getTeamId()).getAcronym() + ")"));
+                                        scoreboardPanel.addComponent(new Label(PlayerService.getPlayerById(entry.getPlayerId()).getNickName()));
                                         scoreboardPanel.addComponent(new Label(String.valueOf(entry.getKills())));
                                         scoreboardPanel.addComponent(new Label(String.valueOf(entry.getDeaths())));
                                     });
@@ -418,10 +443,526 @@ public class App {
 
                 });
 
-            } break;
+                _gui.getButton("main-window-options-button").addListener(button -> {
 
+                    _gui.loadWindow("main-options-window");
+
+                    _gui.getButton("main-options-save-button").addListener((button1 -> {
+                        saveGame(getId());
+                    }));
+
+                });
+
+            }
+            break;
 
         }
     }
+
+    private void saveGame(String appId) {
+
+        //create save folder
+
+        File saveFolder = new File(_pathToSavesFolder + "/" + appId);
+
+        if (saveFolder.isDirectory()) {
+            saveFolder.delete();
+        }
+
+        saveFolder.mkdir();
+
+        String pathToSaveFolder = _pathToSavesFolder + "/" + appId;
+
+        //create info file
+
+        String pathToInfoFile = pathToSaveFolder + "/info.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToInfoFile);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            oos.writeObject(new SaveInfo(
+                    getId(),
+                    _player.getFirstName() + " " + _player.getLastName(),
+                    System.currentTimeMillis()
+                )
+            );
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //League Service
+
+        String pathToLeagueServiceSave = pathToSaveFolder + "/leagues.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToLeagueServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            LeagueService.getAll().forEach((id, league) -> {
+
+                try {
+
+                    oos.writeObject(league);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Manager Service
+
+        String pathToManagerServiceSave = pathToSaveFolder + "/managers.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToManagerServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            ManagerService.getAll().forEach((id, manager) -> {
+
+                try {
+
+                    oos.writeObject(manager);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Match Service
+
+        String pathToMatchServiceSave = pathToSaveFolder + "/matches.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToMatchServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            MatchService.getAll().forEach((id, match) -> {
+
+                try {
+
+                    oos.writeObject(match);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Player Service
+
+        String pathToPlayerServiceSave = pathToSaveFolder + "/players.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToPlayerServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            PlayerService.getAll().forEach((id, player) -> {
+
+                try {
+
+                    oos.writeObject(player);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Season Service
+
+        String pathToSeasonServiceSave = pathToSaveFolder + "/seasons.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToSeasonServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            SeasonService.getAll().forEach((id, season) -> {
+
+                try {
+
+                    oos.writeObject(season);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Team Service
+
+        String pathToTeamServiceSave = pathToSaveFolder + "/teams.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToTeamServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            TeamService.getAll().forEach((id, team) -> {
+
+                try {
+
+                    oos.writeObject(team);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Time Service
+
+        String pathToTimeServiceSave = pathToSaveFolder + "/time.dat";
+
+        try {
+
+            FileOutputStream fout = new FileOutputStream(pathToTimeServiceSave);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+            oos.writeObject(TimeService.getSeconds());
+
+            oos.close();
+            fout.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private ArrayList<SaveInfo> getSavedGames() {
+        ArrayList<SaveInfo> savedGames = new ArrayList<>();
+        File savesFolder = new File(_pathToSavesFolder);
+
+        for (File subfolder : savesFolder.listFiles()) {
+
+            try {
+
+                FileInputStream fin = new FileInputStream(subfolder.getPath() + "/info.dat");
+                ObjectInputStream ois = new ObjectInputStream(fin);
+
+                try {
+
+                    savedGames.add((SaveInfo)ois.readObject());
+
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                ois.close();
+                fin.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        savedGames.sort(Comparator.reverseOrder());
+
+        return savedGames;
+    }
+
+    private void loadGame(String appId) {
+
+        String pathToSaveFolder = _pathToSavesFolder + "/" + appId;
+
+        //League Service
+
+        String pathToLeagueServiceSave = pathToSaveFolder + "/leagues.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToLeagueServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    LeagueService.insertLeague((League)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Manager Service
+
+        String pathToManagerServiceSave = pathToSaveFolder + "/managers.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToManagerServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    ManagerService.insertManager((Manager)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Match Service
+
+        String pathToMatchServiceSave = pathToSaveFolder + "/matches.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToMatchServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    MatchService.insertMatch((Match)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Player Service
+
+        String pathToPlayerServiceSave = pathToSaveFolder + "/players.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToPlayerServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    PlayerService.insertPlayer((Player)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Season Service
+
+        String pathToSeasonServiceSave = pathToSaveFolder + "/seasons.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToSeasonServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    SeasonService.insertSeason((Season)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Team Service
+
+        String pathToTeamServiceSave = pathToSaveFolder + "/teams.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToTeamServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            while (true) {
+
+                try {
+
+                    TeamService.insertTeam((Team)ois.readObject());
+
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Time Service
+
+        String pathToTimeServiceSave = pathToSaveFolder + "/time.dat";
+
+        try {
+
+            FileInputStream fin = new FileInputStream(pathToTimeServiceSave);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            try {
+
+                TimeService.setSeconds((long)ois.readObject());
+
+            } catch (EOFException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e){
+                e.printStackTrace();
+            }
+
+            ois.close();
+            fin.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        _id = appId;
+        _player = ManagerService.getManagerById("player");
+        _playerTeam = TeamService.getTeamById(_player.getTeamId());
+
+    }
+
 }
 

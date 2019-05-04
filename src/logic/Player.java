@@ -2,7 +2,9 @@ package logic;
 
 import utils.Money;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
 
     private String _id;
     private String _firstName;

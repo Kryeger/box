@@ -5,13 +5,11 @@ import logic.service.SeasonService;
 import logic.service.TeamService;
 import logic.service.TimeService;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
-import javax.script.ScriptContext;
+import java.io.Serializable;
 import java.util.*;
 
-public class League {
+public class League implements Serializable {
 
     private String _id;
     private String _name;

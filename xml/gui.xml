@@ -51,11 +51,15 @@
                 <label fgColor="#646464">Start from scratch and make it big!</label>
                 <button id="new-game-button"> New Game </button>
             </panel>
-            <panel id="load-game-panel">
+            <panel id="continue-game-panel">
                 <label fgColor="#646464">Continue your career.</label>
-                <button id="load-game-button"> Load Game </button>
+                <button id="continue-game-button"> Continue Game </button>
 <!--                <label id="save-found-text" fgColor="#BEBBBB">Kry Eger | 14:30:24</label>-->
-                <label id="no-save-found-text" fgColor="#952A28">No save found.</label>
+                <label id="found-save-text" fgColor="#952A28">No save found.</label>
+            </panel>
+            <panel id="load-game-panel">
+                <label fgColor="#646464">Choose from your saves.</label>
+                <button id="load-game-button"> Load Game </button>
             </panel>
             <panel id="options-panel">
                 <label fgColor="#646464">Options and stuff.</label>
@@ -149,7 +153,7 @@
 
     <window id="main-window" title="" centered="" expanded="">
         <panel id="main-window-main-panel" columns="3" hSpread="">
-            <panel id="main-window-left-panel" hSpread="" vSpacing="1" columns="2" tMargin="1">
+            <panel id="main-window-left-panel" hSpread="" vSpacing="1" tMargin="1">
 
                 <panel id="main-window-actions-panel" columns="3" hSpacing="1">
                     <panel id="main-window-actions-col1-panel" vSpacing="1">
@@ -161,9 +165,13 @@
                         <button id="main-window-equipment-button" hAlign="center"> Equipment </button>
                     </panel>
                     <panel id="main-window-actions-col3-panel" vSpacing="1">
-                        <button id="main-window-lineup-button" hAlign="center"> Finances </button>
+                        <button id="main-window-finances-button" hAlign="center"> Finances </button>
                         <button id="main-window-stats-button" hAlign="center"> Stats </button>
                     </panel>
+                </panel>
+
+                <panel id="main-window-options-panel">
+                    <button id="main-window-options-button"> Options </button>
                 </panel>
 
             </panel>
@@ -186,12 +194,7 @@
                 <panel id="main-window-coming-up-panel" hAlign="center">
                     <label hAlign="center" fgColor="#646464">Coming up</label>
                     <panel id="main-window-coming-up-items-panel">
-                        <panel id="main-window-coming-up-item-panel">
-                            <label>L2 | SomeOtherTeam | 18:40</label>
-                        </panel>
-                        <panel id="main-window-coming-up-item-panel">
-                            <label>L2 | WhoKnowsWho | 21:40</label>
-                        </panel>
+
                     </panel>
                 </panel>
 
@@ -205,15 +208,7 @@
                 <panel id="main-window-latest-results-panel" hAlign="center">
                     <label fgColor="#646464" hAlign="center">Latest results</label>
                     <panel id="main-window-latest-results-items">
-                        <panel id="main-window-latest-result-item">
-                            <label>L1 | FaZe 1 : 0 C9</label>
-                        </panel>
-                        <panel id="main-window-latest-result-item">
-                            <label>L1 | FN 1 : 0 B-Tr</label>
-                        </panel>
-                        <panel id="main-window-latest-result-item">
-                            <label>L1 | MiBR 1 : 0 SK</label>
-                        </panel>
+
                     </panel>
                 </panel>
 
@@ -250,12 +245,29 @@
                 <panel id="match-overview-right-panel" hAlign="end" hSpread="">
                     <panel id="match-overview-scoreboard-wrap-panel">
                         <label fgColor="#646464">Scoreboard</label>
-                        <panel id="match-overview-scoreboard-panel" tMargin="1" columns="3"></panel>
+                        <panel id="match-overview-scoreboard-panel" tMargin="1" columns="4"></panel>
                     </panel>
                 </panel>
 
             </panel>
 
+        </panel>
+    </window>
+
+    <window id="main-options-window" title="Options" centered="">
+        <panel id="main-options-main-panel" vMargin="1" vSpacing="1" hMargin="1">
+            <panel id="main-options-close-panel">
+                <label fgColor="#646464">Continue your game</label>
+                <button id="main-options-save-button"> Continue </button>
+            </panel>
+            <panel id="main-options-save-panel">
+                <label fgColor="#646464">Save your game</label>
+                <button id="main-options-save-button"> Save </button>
+            </panel>
+            <panel id="main-options-main-menu-panel">
+                <label fgColor="#646464">Save and go to main menu</label>
+                <button id="main-options-save-quit-button"> Save and Quit </button>
+            </panel>
         </panel>
     </window>
 

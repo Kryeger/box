@@ -2,7 +2,9 @@ package logic;
 
 import utils.Time;
 
-public class Schedule implements Comparable<Schedule> {
+import java.io.Serializable;
+
+public class Schedule implements Comparable<Schedule>, Serializable {
 
     private String _id;
     private String _homeTeamId;

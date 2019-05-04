@@ -21,6 +21,10 @@ public class TeamService {
         _instance._teams.put(id, new Team(id, name, acronym, money));
     }
 
+    public static HashMap<String, Team> getAll() {
+        return _instance._teams;
+    }
+
     public static void insertTeam(Team team){
         _instance._teams.put(team.getId(), team);
     }

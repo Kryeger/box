@@ -1,6 +1,8 @@
 package utils;
 
-public class Time implements Comparable<Time> {
+import java.io.Serializable;
+
+public class Time implements Comparable<Time>, Serializable {
 
     private long _time;
 
@@ -33,6 +35,10 @@ public class Time implements Comparable<Time> {
 
     public boolean equals(Time t){
         return (_time == t.getHours());
+    }
+
+    public void setSeconds(long seconds){
+        _time = seconds;
     }
 
     public void addSeconds(long seconds){

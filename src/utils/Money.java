@@ -1,8 +1,9 @@
 package utils;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Money {
+public class Money implements Serializable {
 
     private BigInteger _amount;
 

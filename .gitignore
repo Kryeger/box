@@ -1,6 +1,10 @@
 # IDE-specific folders
 .idea/
 
+# Saves
+
+.save/
+
 # Compiled class file
 *.class
 

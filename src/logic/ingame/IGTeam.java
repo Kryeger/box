@@ -5,9 +5,10 @@ import logic.Team;
 import logic.service.PlayerService;
 import logic.service.TeamService;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class IGTeam {
+public class IGTeam implements Serializable {
 
     private String _id;
 

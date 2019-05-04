@@ -2,7 +2,9 @@ package logic.ingame;
 
 import logic.Player;
 
-public class IGPlayer {
+import java.io.Serializable;
+
+public class IGPlayer implements Serializable {
 
     private int _health = 100;
     private int _money = 800;

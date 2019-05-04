@@ -1,6 +1,8 @@
 package logic.ingame;
 
-public class Kill {
+import java.io.Serializable;
+
+public class Kill implements Serializable {
 
     private String _killerId;
     private String _killedId;

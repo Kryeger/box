@@ -7,9 +7,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import utils.Time;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Season {
+public class Season implements Serializable {
 
     private String _id;
     private String _name;
