@@ -1,11 +1,9 @@
 package logic;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Button;
-import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.screen.Screen;
@@ -15,33 +13,14 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.googlecode.lanterna.gui2.GridLayout;
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import gen.MalePlayerGenerator;
-import gui.AdvanceNextRound;
 import gui.Gui;
-import gui.KeyStrokeListener;
-import logic.ingame.Kill;
 import logic.service.*;
-import org.w3c.dom.Text;
 import utils.Money;
 import utils.SaveInfo;
 
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.List;
-import java.util.function.Function;
 
 public class App {
 
@@ -318,6 +297,7 @@ public class App {
                     _gui.getLabel("main-window-date").setText(TimeService.getDate());
                     _gui.getLabel("main-window-time").setText(TimeService.getTime());
                 };
+
                 Runnable refreshLeagueMatches = () -> {
                     //refresh league matches panel
                     _gui.getPanel("main-window-league-matches-items-panel").removeAllComponents();
@@ -462,6 +442,12 @@ public class App {
     private void saveGame(String appId) {
 
         //create save folder
+
+        File savesFolder = new File(_pathToSavesFolder);
+
+        if(!savesFolder.isDirectory()){
+            savesFolder.mkdir();
+        }
 
         File saveFolder = new File(_pathToSavesFolder + "/" + appId);
 
@@ -704,30 +690,32 @@ public class App {
         ArrayList<SaveInfo> savedGames = new ArrayList<>();
         File savesFolder = new File(_pathToSavesFolder);
 
-        for (File subfolder : savesFolder.listFiles()) {
-
-            try {
-
-                FileInputStream fin = new FileInputStream(subfolder.getPath() + "/info.dat");
-                ObjectInputStream ois = new ObjectInputStream(fin);
+        if (savesFolder.isDirectory()) {
+            for (File subfolder : savesFolder.listFiles()) {
 
                 try {
 
-                    savedGames.add((SaveInfo)ois.readObject());
+                    FileInputStream fin = new FileInputStream(subfolder.getPath() + "/info.dat");
+                    ObjectInputStream ois = new ObjectInputStream(fin);
 
-                } catch (ClassNotFoundException e) {
+                    try {
+
+                        savedGames.add((SaveInfo)ois.readObject());
+
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    ois.close();
+                    fin.close();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                ois.close();
-                fin.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
         }
 
         savedGames.sort(Comparator.reverseOrder());

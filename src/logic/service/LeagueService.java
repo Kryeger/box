@@ -16,12 +16,9 @@ public class LeagueService {
         return _instance;
     }
 
-    public void createLeague(String id, String name) {
-        _instance._leagues.put(id, new League(id, name));
-    }
-
     public static void insertLeague(League league){
         _instance._leagues.put(league.getId(), league);
+        AuditService.log("League '" + league.getId() + "' inserted.");
     }
 
     public static League getLeagueById(String id){
